@@ -1,7 +1,9 @@
 # Multi-stage build for optimized production image
+# Uses requirements-runtime.txt for minimal production dependencies
+# Full requirements.txt used only for development and CI/CD
 
 # ============================================
-# Stage 1: Base (for potential training)
+# Stage 1: Base (install dependencies)
 # ============================================
 FROM python:3.11-slim as base
 
@@ -13,10 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
+# Copy runtime requirements and install only runtime dependencies
+COPY requirements-runtime.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements-runtime.txt
 
 # ============================================
 # Stage 2: Runtime (production-ready)

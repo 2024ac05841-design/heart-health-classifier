@@ -1,0 +1,20 @@
+# Production runtime dependencies for FastAPI inference
+# This is the minimal set for running the API in production
+
+# Core ML Libraries (for model inference)
+pandas==2.1.0
+numpy==1.25.2
+scikit-learn==1.3.0
+
+# Model Loading
+joblib==1.3.2
+
+# API Framework
+fastapi==0.103.1
+uvicorn==0.23.2
+pydantic==2.3.0
+python-multipart==0.0.6
+
+# Monitoring
+prometheus-client==0.17.1
+prometheus-fastapi-instrumentator==6.1.0
