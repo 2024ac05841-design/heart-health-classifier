@@ -91,7 +91,7 @@ jobs:
         docker save heart-disease-api:latest | gzip > heart-disease-api.tar.gz
     
     - name: Upload Docker image artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: docker-image
         path: heart-disease-api.tar.gz
@@ -126,7 +126,7 @@ jobs:
         # python scripts/train_models.py
     
     - name: Upload model artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: model-artifacts
         path: models/
