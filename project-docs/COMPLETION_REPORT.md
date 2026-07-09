@@ -114,6 +114,7 @@ This project successfully implements a complete end-to-end MLOps pipeline for he
 | Code linting | ✅ Complete | Flake8, Black |
 | GitHub Actions | ✅ Complete | Complete workflow |
 | Automated testing | ✅ Complete | All tests automated |
+| Model training | ✅ Complete | Automated in pipeline |
 | Build validation | ✅ Complete | Docker build test |
 | Artifacts | ✅ Complete | Artifact upload |
 | Container Registry | ✅ Complete | GitHub Container Registry (ghcr.io) |
@@ -122,10 +123,20 @@ This project successfully implements a complete end-to-end MLOps pipeline for he
 1. ✅ Linting (Flake8, Black)
 2. ✅ Unit Testing (Pytest)
 3. ✅ Coverage Reporting
-4. ✅ Docker Image Build
-5. ✅ Container Registry Push (ghcr.io)
-6. ✅ Security Scanning (Trivy)
-7. ✅ Artifact Management
+4. ✅ **Model Training** (automated data download & training)
+5. ✅ **Model Verification** (ensure artifacts exist)
+6. ✅ Docker Image Build (with trained models)
+7. ✅ Container Testing (health check validation)
+8. ✅ Container Registry Push (ghcr.io with latest & SHA tags)
+9. ✅ Security Scanning (Trivy with CodeQL v3)
+10. ✅ Artifact Management (Docker image backup)
+
+**MLOps Best Practices Implemented:**
+- ✅ Models trained from source in pipeline (reproducible)
+- ✅ No binary model files in git repository
+- ✅ Each Docker image contains its trained model
+- ✅ Model artifacts verified before packaging
+- ✅ Pipeline skips for documentation-only changes
 
 **Test Coverage:**
 - Unit tests: 20+ test cases
@@ -137,6 +148,7 @@ This project successfully implements a complete end-to-end MLOps pipeline for he
 - ✅ GitHub Actions workflow (updated with latest actions v4)
 - ✅ Linting configuration
 - ✅ Coverage reporting
+- ✅ Automated model training and packaging
 - ✅ Automated builds
 - ✅ GitHub Container Registry integration
 - ✅ Security scanning with proper permissions

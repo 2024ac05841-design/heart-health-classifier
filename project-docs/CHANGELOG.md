@@ -11,18 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Container Registry (ghcr.io) integration for automated Docker image publishing
 - Proper workflow permissions for packages and security events
 - Enhanced test data with balanced classes for better stratified splitting
+- Automated model training in CI/CD build pipeline
+- Model verification step before Docker image build
+- Separate Kubernetes deployment configs for local (NodePort) and cloud (LoadBalancer)
+- Comprehensive Kubernetes deployment documentation in `k8s/README.md`
+- Path filters to skip pipeline for documentation-only changes
 
 ### Changed
 - Updated `actions/upload-artifact` from deprecated v3 to v4
 - Updated `github/codeql-action/upload-sarif` from deprecated v2 to v3
 - Fixed unit tests to handle stratified splitting with proper sample sizes
 - Updated data preprocessing to use `ffill()` instead of deprecated `fillna(method='ffill')`
+- CI/CD pipeline now trains model from scratch instead of using committed model files
+- Removed separate "train" job (integrated into build job)
+- Models no longer committed to git repository (trained in pipeline)
 
 ### Fixed
 - CI/CD workflow deprecation warnings resolved
 - Security scan permissions error ("Resource not accessible by integration")
 - Test failures in `test_split_train_test`, `test_scale_features`, and `test_preprocess_pipeline`
 - Added coverage files (`.coverage`, `coverage.xml`, `htmlcov/`, `.pytest_cache/`) to `.gitignore`
+- Container startup error due to missing model files (now trained in pipeline)
+
+### Improved
+- Better MLOps practices: reproducible model training in CI/CD
+- Cleaner repository without binary model files
+- Reduced pipeline runs for documentation updates
+- Enhanced Kubernetes deployment flexibility with environment-specific configs
 
 ## [1.0.0] - 2026-07-08
 

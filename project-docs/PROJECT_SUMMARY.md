@@ -46,11 +46,14 @@ This MLOps project has been successfully set up with all required components for
 - [x] Code linting (Flake8, Black)
 - [x] Unit tests (Pytest)
 - [x] Coverage reporting
-- [x] Automated Docker build
+- [x] Automated model training in build pipeline
+- [x] Model verification before Docker build
+- [x] Automated Docker build with trained models
 - [x] GitHub Container Registry push (ghcr.io)
 - [x] Security scanning (Trivy with CodeQL v3)
 - [x] Pipeline artifacts (upload-artifact v4)
 - [x] Proper permissions for security events and packages
+- [x] Skip pipeline for documentation-only changes
 
 ### ✅ 6. Model Containerization
 - [x] Dockerfile

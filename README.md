@@ -594,52 +594,72 @@ Services:
 
 ### Kubernetes Deployment
 
-#### Using Minikube (Local)
+We provide separate Kubernetes configurations for local testing and cloud production deployments:
+
+- **`k8s/deployment-local.yaml`** - For Rancher Desktop, Minikube, Docker Desktop (NodePort service on port 30080)
+- **`k8s/deployment-cloud.yaml`** - For AWS EKS, Azure AKS, Google GKE (LoadBalancer service)
+- **`k8s/deployment.yaml`** - Generic deployment (backward compatibility)
+
+See [`k8s/README.md`](k8s/README.md) for comprehensive deployment guide.
+
+#### Using Rancher Desktop / Minikube (Local)
 
 ```bash
-# Start Minikube
-minikube start
+# Ensure kubectl is connected to local cluster
+kubectl config use-context rancher-desktop  # or 'minikube' for Minikube
 
-# Build image in Minikube
-eval $(minikube docker-env)
-docker build -t heart-disease-api:latest .
+# Verify cluster
+kubectl cluster-info
 
-# Deploy to Kubernetes
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/deployment.yaml
+# Deploy application (uses ghcr.io image with trained model)
+kubectl apply -f k8s/deployment-local.yaml
 
-# Check deployment
+# Check deployment status
 kubectl get pods
 kubectl get services
 
-# Get service URL
-minikube service heart-disease-api-service --url
+# Access API (NodePort 30080)
+curl http://localhost:30080/health
+
+# View API documentation
+# Open browser: http://localhost:30080/docs
 
 # View logs
 kubectl logs -l app=heart-disease-api
 
 # Delete deployment
-kubectl delete -f k8s/deployment.yaml
-kubectl delete -f k8s/configmap.yaml
+kubectl delete -f k8s/deployment-local.yaml
 ```
 
 #### Using Cloud Kubernetes (GKE/EKS/AKS)
 
-1. **Build and push image to registry:**
-
 ```bash
-docker build -t gcr.io/your-project/heart-disease-api:latest .
-docker push gcr.io/your-project/heart-disease-api:latest
+# Connect to your cloud cluster
+# AWS: aws eks update-kubeconfig --name your-cluster
+# Azure: az aks get-credentials --resource-group your-rg --name your-cluster
+# GCP: gcloud container clusters get-credentials your-cluster --zone your-zone
+
+# Deploy application (uses ghcr.io image)
+kubectl apply -f k8s/deployment-cloud.yaml
+
+# Check deployment
+kubectl get pods
+kubectl get services
+
+# Wait for LoadBalancer external IP (may take 1-2 minutes)
+kubectl get service heart-disease-api-service -w
+
+# Once EXTERNAL-IP is assigned:
+curl http://<EXTERNAL-IP>/health
+
+# View logs
+kubectl logs -l app=heart-disease-api
+
+# Delete deployment
+kubectl delete -f k8s/deployment-cloud.yaml
 ```
 
-2. **Update deployment.yaml** with your image path
-
-3. **Deploy:**
-
-```bash
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/deployment.yaml
-```
+**Note:** The Docker image is automatically pulled from GitHub Container Registry and includes the trained model (no manual model upload needed).
 
 ---
 
@@ -684,29 +704,51 @@ Log format includes:
 The CI/CD pipeline automatically:
 
 1. **Linting:** Checks code quality with Flake8 and Black
-2. **Testing:** Runs unit tests with Pytest
-3. **Coverage:** Generates code coverage reports
-4. **Build:** Creates Docker image
-5. **Security:** Scans for vulnerabilities with Trivy
-6. **Deploy:** (Optional) Deploys to production
+2. **Testing:** Runs unit tests with Pytest and generates coverage reports
+3. **Model Training:** Downloads data and trains the model from scratch
+4. **Build:** Creates Docker image with trained model artifacts
+5. **Container Registry:** Pushes image to GitHub Container Registry (ghcr.io)
+6. **Security:** Scans for vulnerabilities with Trivy
+7. **Artifacts:** Saves Docker image as downloadable artifact
 
 ### Trigger Events
 
-- Push to `main` or `develop` branches
+- Push to `main` or `develop` branches (excluding documentation-only changes)
 - Pull requests to `main`
+
+**Note:** Pipeline skips execution for changes only to `*.md`, `project-docs/`, `LICENSE`, or `.gitignore`
 
 ### Pipeline Stages
 
 ```mermaid
-graph LR
-    A[Code Push] --> B[Lint Code]
-    B --> C[Run Tests]
-    C --> D[Build Docker Image]
-    D --> E[Security Scan]
-    E --> F[Deploy to K8s]
+graph TB
+    A[Code Push] --> B{Doc Only?}
+    B -->|Yes| Z[Skip Pipeline]
+    B -->|No| C[Lint Code]
+    C --> D[Run Tests]
+    D --> E[Train Model]
+    E --> F[Verify Model Files]
+    F --> G[Build Docker Image]
+    G --> H[Test Container]
+    H --> I[Push to ghcr.io]
+    I --> J[Security Scan]
+    J --> K[Save Artifacts]
     
     style A fill:#4caf50
-    style F fill:#2196f3
+    style E fill:#ff9800
+    style I fill:#2196f3
+    style Z fill:#9e9e9e
+```
+
+### Container Registry
+
+Docker images are automatically published to:
+- **Registry:** `ghcr.io/2024ac05841-design/heart-health-classifier`
+- **Tags:** `latest` and `<commit-sha>`
+
+Pull the latest image:
+```bash
+docker pull ghcr.io/2024ac05841-design/heart-health-classifier:latest
 ```
 
 ---
