@@ -6,7 +6,6 @@
 **Model Version:** 1.0.0  
 **Model Type:** Binary Classification  
 **Framework:** Scikit-learn  
-**Date:** 2026-07-08
 
 ## Intended Use
 
@@ -139,7 +138,7 @@ For questions about this model:
 
 ## Changelog
 
-### Version 1.0.0 (2026-07-08)
+### Version 1.0.0
 - Initial model release
 - Random Forest classifier
 - 13 input features

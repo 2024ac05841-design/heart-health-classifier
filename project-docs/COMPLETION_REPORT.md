@@ -5,7 +5,6 @@
 **Course:** Machine Learning Operations (MLOps) AIMLCZG523  
 **Assignment:** Assignment 01  
 **Institution:** BITS Pilani  
-**Date Completed:** July 8, 2026  
 
 ---
 
@@ -433,7 +432,6 @@ kubectl apply -f k8s/
 
 ---
 
-**Report Generated:** July 8, 2026  
 **Assignment:** AIMLCZG523 - Assignment 01  
 **Status:** ✅ Complete and Ready for Submission
 
