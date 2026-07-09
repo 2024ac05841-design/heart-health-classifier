@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-10
+
+### Added
+- Modular API structure with separate router files for better organization
+- Constants module (`api/constants.py`) for centralized response examples and configuration
+- Dedicated dependency injection module (`api/dependencies.py`) for model management
+- Separate Pydantic models module (`api/models.py`)
+- Individual router modules: `health.py`, `predict.py`, `model_info.py`, `test_data.py`
+
+### Changed
+- Refactored monolithic `api/app.py` (750+ lines) into modular structure (~80 lines main app)
+- **CI/CD Pipeline Security Enhancement:** Docker image push now happens AFTER security scan passes
+  - Build job: Builds image and saves as artifact (no push)
+  - Security scan job: Scans the built image for vulnerabilities
+  - Push job: Only pushes to GHCR if security scan passes (main branch only)
+- Updated CI/CD workflow diagrams in README.md to reflect security-first approach
+- Updated COMPLETION_REPORT.md pipeline stages to show correct order
+- Separated runtime dependencies (`requirements-runtime.txt`) from full dependencies
+- Renamed `requirements-prod.txt` to `requirements-runtime.txt` for better clarity
+- Hidden `/health` endpoint from Swagger UI (still functional for Kubernetes probes)
+- Added `*.bak` files to `.gitignore`
+
+### Improved
+- Better code organization and maintainability with modular structure
+- Reduced code duplication by ~200 lines with centralized constants
+- Enhanced security: Images only published to registry after passing vulnerability scans
+- Smaller production Docker images (~40% reduction with separated dependencies)
+- More secure CI/CD pipeline: No vulnerable images pushed to production
+- Easier to test individual components with separated routers
+- Consistent API responses across all endpoints using shared constants
+
 ## [1.1.0] - 2026-07-10
 
 ### Added

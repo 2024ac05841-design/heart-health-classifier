@@ -126,21 +126,6 @@ jobs:
         docker stop test-api
         docker rm test-api
     
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Push to GitHub Container Registry
-      run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/heart-health-classifier
-        docker tag heart-disease-api:latest ${IMAGE_NAME}:latest
-        docker tag heart-disease-api:latest ${IMAGE_NAME}:${{ github.sha }}
-        docker push ${IMAGE_NAME}:latest
-        docker push ${IMAGE_NAME}:${{ github.sha }}
-    
     - name: Save Docker image
       run: |
         docker save heart-disease-api:latest | gzip > heart-disease-api.tar.gz
@@ -173,3 +158,35 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+
+  push-image:
+    name: Push Docker Image
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Download Docker image artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: docker-image
+    
+    - name: Load Docker image
+      run: |
+        docker load < heart-disease-api.tar.gz
+    
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Tag and push to GitHub Container Registry
+      run: |
+        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/heart-health-classifier
+        docker tag heart-disease-api:latest ${IMAGE_NAME}:latest
+        docker tag heart-disease-api:latest ${IMAGE_NAME}:${{ github.sha }}
+        docker push ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}:${{ github.sha }}
+        echo "✅ Image pushed successfully to GHCR"

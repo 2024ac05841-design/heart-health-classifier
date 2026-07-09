@@ -127,8 +127,8 @@ This project successfully implements a complete end-to-end MLOps pipeline for he
 5. ✅ **Model Verification** (ensure artifacts exist)
 6. ✅ Docker Image Build (with trained models)
 7. ✅ Container Testing (health check validation)
-8. ✅ Container Registry Push (ghcr.io with latest & SHA tags)
-9. ✅ Security Scanning (Trivy with CodeQL v3)
+8. ✅ Security Scanning (Trivy with CodeQL v3)
+9. ✅ Container Registry Push (ghcr.io with latest & SHA tags, only after security scan passes)
 10. ✅ Artifact Management (Docker image backup)
 
 **MLOps Best Practices Implemented:**

@@ -60,7 +60,8 @@ graph TB
         G --> H[Model Evaluation]
         H --> I[Model Artifacts]
         I --> J[Build Docker Image]
-        J --> K[Push to GHCR]
+        J --> JS[Security Scan]
+        JS --> K[Push to GHCR]
     end
     
     subgraph "Container Registry"
@@ -757,13 +758,15 @@ graph TB
     E --> F[Verify Model Files]
     F --> G[Build Docker Image]
     G --> H[Test Container]
-    H --> I[Push to ghcr.io]
+    H --> I[Save Image Artifact]
     I --> J[Security Scan]
-    J --> K[Save Artifacts]
+    J --> K[Push to ghcr.io]
+    K --> L[Deployment Ready]
     
     style A fill:#4caf50
     style E fill:#ff9800
-    style I fill:#2196f3
+    style J fill:#f44336
+    style K fill:#2196f3
     style Z fill:#9e9e9e
 ```
 
