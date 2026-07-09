@@ -271,33 +271,39 @@ graph TB
 heart-disease-mlops/
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yml              # GitHub Actions CI/CD pipeline
+│       └── ci-cd.yml              # GitHub Actions CI/CD pipeline with model training
 ├── api/
 │   ├── __init__.py
 │   └── app.py                     # FastAPI application
 ├── data/
 │   ├── raw/                       # Raw dataset storage
-│   ├── processed/                 # Processed data
-│   └── download_data.py           # Dataset download script
+│   ├── create_sample_data.py      # Sample data generator
+│   ├── download_data.py           # Dataset download script
+│   └── README.md                  # Data documentation
 ├── k8s/
-│   ├── deployment.yaml            # Kubernetes deployment
+│   ├── deployment-local.yaml      # Kubernetes deployment (local - NodePort)
+│   ├── deployment-cloud.yaml      # Kubernetes deployment (cloud - LoadBalancer)
+│   ├── deployment.yaml            # Generic deployment (backward compatibility)
 │   ├── configmap.yaml             # Configuration
-│   └── service.yaml               # Service definition
+│   └── README.md                  # Kubernetes deployment guide
 ├── models/
-│   ├── best_model.pkl             # Trained model
-│   ├── scaler.pkl                 # Feature scaler
-│   ├── feature_names.json         # Feature metadata
-│   └── metrics.json               # Model metrics
+│   ├── feature_names.json         # Feature metadata (committed)
+│   ├── metrics.json               # Model metrics (committed)
+│   ├── best_model.pkl             # Trained model (built in CI/CD, not in git)
+│   └── scaler.pkl                 # Feature scaler (built in CI/CD, not in git)
 ├── monitoring/
-│   ├── prometheus.yml             # Prometheus config
-│   └── grafana-dashboards/        # Grafana dashboards
+│   └── prometheus.yml             # Prometheus configuration
+├── project-docs/
+│   ├── CHANGELOG.md               # Version history
+│   ├── COMPLETION_REPORT.md       # Assignment completion report
+│   ├── CONTRIBUTING.md            # Contribution guidelines
+│   ├── MODEL_CARD.md              # Model documentation
+│   ├── PROJECT_STRUCTURE.md       # Detailed structure
+│   ├── PROJECT_SUMMARY.md         # Project summary
+│   ├── check_status.py            # Status verification script
+│   └── verify_setup.py            # Setup verification script
 ├── scripts/
-│   ├── train_model.py            # Main training script
-│   ├── test_api.py               # API testing
-│   ├── docker_commands.sh        # Docker utilities
-│   └── k8s_commands.sh           # Kubernetes utilities
-├── scripts/
-│   ├── train_model.py             # Training script
+│   ├── train_model.py             # Main training script
 │   ├── test_api.py                # API testing script
 │   ├── docker_commands.sh         # Docker helper commands
 │   └── k8s_commands.sh            # Kubernetes helper commands
@@ -312,14 +318,24 @@ heart-disease-mlops/
 │   ├── test_data_processing.py    # Data processing tests
 │   ├── test_model_training.py     # Model training tests
 │   └── test_api.py                # API tests
-├── .dockerignore
-├── .gitignore
+├── .dockerignore                   # Docker ignore rules
+├── .gitignore                      # Git ignore rules
 ├── Dockerfile                      # Container definition
-├── docker-compose.yml              # Multi-container setup
+├── docker-compose.yml              # Multi-container setup with monitoring
+├── environment.yml                 # Conda environment specification
+├── LICENSE                         # MIT License
+├── Makefile                        # Common commands
 ├── pytest.ini                      # Pytest configuration
+├── QUICKSTART.md                   # Quick start guide
+├── README.md                       # This file
 ├── requirements.txt                # Python dependencies
-└── README.md                       # This file
+└── test_data.json                  # Sample test data for API
 ```
+
+**Key Notes:**
+- Model files (`*.pkl`) are trained during CI/CD pipeline and packaged in Docker images
+- Models are **not** committed to git (reproducible builds from source)
+- Docker images with trained models available at `ghcr.io/2024ac05841-design/heart-health-classifier`
 
 ---
 
