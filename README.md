@@ -47,46 +47,56 @@ This project implements an **end-to-end Machine Learning Operations (MLOps)** so
 
 ```mermaid
 graph TB
-    subgraph "Data Layer"
-        A[UCI Dataset] --> B[Data Download Script]
-        B --> C[Raw Data Storage]
+    subgraph "Source Control"
+        A[GitHub Repository] --> B[Code Push]
     end
     
-    subgraph "ML Pipeline"
-        C --> D[Data Processing]
-        D --> E[Feature Engineering]
-        E --> F[Model Training]
-        F --> G[Model Evaluation]
-        G --> H[MLflow Tracking]
+    subgraph "CI/CD Pipeline - GitHub Actions"
+        B --> C[Lint & Test]
+        C --> D[Download Dataset]
+        D --> E[Data Processing]
+        E --> F[Feature Engineering]
+        F --> G[Model Training]
+        G --> H[Model Evaluation]
+        H --> I[Model Artifacts]
+        I --> J[Build Docker Image]
+        J --> K[Push to GHCR]
     end
     
-    subgraph "Model Registry"
-        H --> I[Best Model Selection]
-        I --> J[Model Artifacts]
-    end
-    
-    subgraph "Serving Layer"
-        J --> K[FastAPI Service]
-        K --> L[Docker Container]
+    subgraph "Container Registry"
+        K --> L[ghcr.io/heart-health-classifier]
     end
     
     subgraph "Deployment"
-        L --> M[Kubernetes Cluster]
-        M --> N[Load Balancer]
-        N --> O[End Users]
+        L --> M{Environment}
+        M -->|Local| N[Rancher Desktop/Minikube]
+        M -->|Cloud| O[AWS EKS/Azure AKS/GCP GKE]
+        N --> P[NodePort :30080]
+        O --> Q[LoadBalancer]
+    end
+    
+    subgraph "API Service"
+        P --> R[FastAPI Container]
+        Q --> R
+        R --> S[Trained Model + Scaler]
+    end
+    
+    subgraph "End Users"
+        R --> T[REST API Endpoints]
+        T --> U[Predictions]
     end
     
     subgraph "Monitoring"
-        K --> P[Prometheus]
-        P --> Q[Grafana Dashboard]
+        R --> V[Prometheus Metrics]
+        V --> W[Grafana Dashboard]
     end
     
-    subgraph "CI/CD"
-        R[GitHub Repository] --> S[GitHub Actions]
-        S --> T[Automated Tests]
-        T --> U[Build Docker Image]
-        U --> M
-    end
+    style A fill:#e1f5ff
+    style G fill:#ff9800
+    style L fill:#2196f3
+    style R fill:#4caf50
+    style V fill:#9c27b0
+```
     
     style A fill:#e1f5ff
     style K fill:#fff3e0
