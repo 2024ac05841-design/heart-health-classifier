@@ -331,6 +331,14 @@ heart-disease-mlops/
 - Models are **not** committed to git (reproducible builds from source)
 - Docker images with trained models available at `ghcr.io/2024ac05841-design/heart-health-classifier`
 
+**Generated Directories (not in git):**
+- `mlruns_training/` - MLflow experiment tracking data (generated during local training)
+- `.pytest_cache/` - Pytest cache directory
+- `htmlcov/` - HTML coverage reports
+- `.coverage`, `coverage.xml` - Test coverage files
+- `venv/` - Python virtual environment
+- `.vscode/` - VS Code settings (user-specific)
+
 ---
 
 ## 🚀 Setup Instructions
