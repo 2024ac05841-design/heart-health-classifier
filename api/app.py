@@ -2,7 +2,7 @@
 FastAPI application for Heart Disease prediction
 """
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import joblib
@@ -730,7 +730,7 @@ def generate_sample_patient_data(risk_level: str = "random") -> Dict:
     },
 )
 async def generate_test_data(
-    risk_level: str = Field(
+    risk_level: str = Query(
         default="random",
         description="Risk level for generated data: 'low', 'high', or 'random'",
         pattern="^(low|high|random)$",
