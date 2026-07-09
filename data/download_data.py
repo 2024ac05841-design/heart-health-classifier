@@ -31,22 +31,24 @@ def download_heart_disease_data():
         print(f"Features shape: {X.shape}")
         print(f"Target shape: {y.shape}")
         print(f"Target column(s): {y.columns.tolist()}")
-        
+
         # Combine into single dataframe
         df = pd.concat([X, y], axis=1)
-        
+
         print(f"Combined dataframe columns: {df.columns.tolist()}")
-        
+
         # Ensure target column is named 'target'
         # The UCI dataset may use 'num' or other names for the target
-        if 'target' not in df.columns:
+        if "target" not in df.columns:
             # If there's a target column from y dataframe, rename it
             if len(y.columns) > 0:
                 target_col = y.columns[0]
                 print(f"Renaming '{target_col}' to 'target'")
-                df = df.rename(columns={target_col: 'target'})
+                df = df.rename(columns={target_col: "target"})
             else:
-                raise ValueError(f"No target column found. Available columns: {df.columns.tolist()}")
+                raise ValueError(
+                    f"No target column found. Available columns: {df.columns.tolist()}"
+                )
 
         # Save to CSV
         output_path = raw_data_dir / "heart_disease.csv"
