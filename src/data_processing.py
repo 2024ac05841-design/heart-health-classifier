@@ -39,13 +39,13 @@ class DataProcessor:
         numerical_cols = df.select_dtypes(include=[np.number]).columns
         for col in numerical_cols:
             if df[col].isnull().sum() > 0:
-                df[col].fillna(df[col].median(), inplace=True)
+                df[col] = df[col].fillna(df[col].median())
 
         # For categorical columns: fill with mode
         categorical_cols = df.select_dtypes(include=["object"]).columns
         for col in categorical_cols:
             if df[col].isnull().sum() > 0:
-                df[col].fillna(df[col].mode()[0], inplace=True)
+                df[col] = df[col].fillna(df[col].mode()[0])
 
         logger.info(f"Missing values after processing:\n{df.isnull().sum()}")
         return df
