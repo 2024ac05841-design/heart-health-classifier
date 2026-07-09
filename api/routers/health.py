@@ -15,6 +15,7 @@ router = APIRouter()
     summary="Root endpoint",
     description="Returns API information and available endpoints",
     tags=["Health"],
+    include_in_schema=False,  # Hide from Swagger UI
 )
 async def root():
     """
