@@ -64,6 +64,12 @@ Thumbs.db
 logs/
 *.log
 
+# Test coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+
 # Docker
 *.tar
 
