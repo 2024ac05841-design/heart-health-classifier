@@ -26,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed `requirements-prod.txt` to `requirements-runtime.txt` for better clarity
 - Hidden `/health` endpoint from Swagger UI (still functional for Kubernetes probes)
 - Added `*.bak` files to `.gitignore`
+- **GitHub Actions updated to latest versions:**
+  - `actions/checkout@v3` → `v4`
+  - `actions/setup-python@v4` → `v5`
+  - `codecov/codecov-action@v3` → `v5`
+  - `docker/setup-buildx-action@v2` → `v3`
+
+### Fixed
+- Node.js 20 deprecation warnings in CI/CD pipeline by updating all actions to support Node.js 24
 
 ### Improved
 - Better code organization and maintainability with modular structure
