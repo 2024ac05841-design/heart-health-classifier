@@ -39,13 +39,20 @@ mlartifacts/
 tests/
 pytest.ini
 .coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
 
 # CI/CD
 .github/
 
 # Documentation
 *.md
-docs/
+project-docs/
+
+# Training scripts and source (not needed in runtime container)
+scripts/
+src/
 
 # OS
 .DS_Store
