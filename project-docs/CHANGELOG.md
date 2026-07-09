@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI/CD pipeline now trains model from scratch instead of using committed model files
 - Removed separate "train" job (integrated into build job)
 - Models no longer committed to git repository (trained in pipeline)
+- Removed redundant `check_status.py` (verify_setup.py provides comprehensive verification)
 
 ### Fixed
 - CI/CD workflow deprecation warnings resolved
@@ -38,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleaner repository without binary model files
 - Reduced pipeline runs for documentation updates
 - Enhanced Kubernetes deployment flexibility with environment-specific configs
+- Optimized Docker image with multi-stage build (excludes training code from runtime)
+- Reduced final image size by excluding unnecessary source files (`src/`, `scripts/`, `tests/`)
 
 ## [1.0.0] - 2026-07-08
 
