@@ -30,6 +30,14 @@ def download_heart_disease_data():
 
         # Combine into single dataframe
         df = pd.concat([X, y], axis=1)
+        
+        # Ensure target column is named 'target'
+        # The UCI dataset may use 'num' or other names for the target
+        if 'num' in df.columns:
+            df = df.rename(columns={'num': 'target'})
+        elif 'target' not in df.columns and len(y.columns) > 0:
+            # Rename the first target column to 'target'
+            df = df.rename(columns={y.columns[0]: 'target'})
 
         # Save to CSV
         output_path = raw_data_dir / "heart_disease.csv"
