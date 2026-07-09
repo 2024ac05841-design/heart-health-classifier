@@ -294,7 +294,6 @@ heart-disease-mlops/
 │   ├── MODEL_CARD.md              # Model documentation
 │   ├── PROJECT_STRUCTURE.md       # Detailed structure
 │   ├── PROJECT_SUMMARY.md         # Project summary
-│   ├── check_status.py            # Status verification script
 │   └── verify_setup.py            # Setup verification script
 ├── scripts/
 │   ├── train_model.py             # Main training script
