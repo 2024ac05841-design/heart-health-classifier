@@ -97,12 +97,6 @@ graph TB
     style R fill:#4caf50
     style V fill:#9c27b0
 ```
-    
-    style A fill:#e1f5ff
-    style K fill:#fff3e0
-    style M fill:#f3e5f5
-    style P fill:#e8f5e9
-```
 
 ### ML Pipeline Workflow
 
