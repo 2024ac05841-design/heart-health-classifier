@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: api
-        image: heart-disease-api:latest
-        imagePullPolicy: IfNotPresent
+        image: ghcr.io/2024ac05841-design/heart-health-classifier:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
           name: http
@@ -60,12 +60,13 @@ metadata:
   labels:
     app: heart-disease-api
 spec:
-  type: LoadBalancer
+  type: NodePort  # Use NodePort for local Rancher Desktop. Change to LoadBalancer for cloud.
   selector:
     app: heart-disease-api
   ports:
   - port: 80
     targetPort: 8000
+    nodePort: 30080  # Fixed port for easy local access
     protocol: TCP
     name: http
   sessionAffinity: None
