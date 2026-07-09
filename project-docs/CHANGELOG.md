@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-10
+
+### Added
+- GitHub Container Registry (ghcr.io) integration for automated Docker image publishing
+- Proper workflow permissions for packages and security events
+- Enhanced test data with balanced classes for better stratified splitting
+
+### Changed
+- Updated `actions/upload-artifact` from deprecated v3 to v4
+- Updated `github/codeql-action/upload-sarif` from deprecated v2 to v3
+- Fixed unit tests to handle stratified splitting with proper sample sizes
+- Updated data preprocessing to use `ffill()` instead of deprecated `fillna(method='ffill')`
+
+### Fixed
+- CI/CD workflow deprecation warnings resolved
+- Security scan permissions error ("Resource not accessible by integration")
+- Test failures in `test_split_train_test`, `test_scale_features`, and `test_preprocess_pipeline`
+- Added coverage files (`.coverage`, `coverage.xml`, `htmlcov/`, `.pytest_cache/`) to `.gitignore`
+
 ## [1.0.0] - 2026-07-08
 
 ### Added

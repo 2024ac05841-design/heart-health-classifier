@@ -47,8 +47,10 @@ This MLOps project has been successfully set up with all required components for
 - [x] Unit tests (Pytest)
 - [x] Coverage reporting
 - [x] Automated Docker build
-- [x] Security scanning (Trivy)
-- [x] Pipeline artifacts
+- [x] GitHub Container Registry push (ghcr.io)
+- [x] Security scanning (Trivy with CodeQL v3)
+- [x] Pipeline artifacts (upload-artifact v4)
+- [x] Proper permissions for security events and packages
 
 ### ✅ 6. Model Containerization
 - [x] Dockerfile
