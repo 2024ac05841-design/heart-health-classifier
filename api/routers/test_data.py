@@ -91,7 +91,7 @@ def generate_sample_patient_data(risk_level: str = "random") -> Dict:
     response_model=PatientData,
     summary="Generate test patient data",
     description="Generate synthetic patient data for testing the prediction endpoint",
-    tags=["Testing"],
+    tags=["Test Data"],
     responses={
         200: {
             "description": "Test data generated successfully",

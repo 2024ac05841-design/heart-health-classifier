@@ -74,7 +74,7 @@ Instrumentator().instrument(app).expose(app)
 app.include_router(health.router, tags=["Health"])
 app.include_router(predict.router, tags=["Prediction"])
 app.include_router(model_info.router, tags=["Model"])
-app.include_router(test_data.router, tags=["Testing"])
+app.include_router(test_data.router, tags=["Test Data"])
 
 
 # Startup event
