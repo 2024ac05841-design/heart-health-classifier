@@ -7,6 +7,11 @@ import numpy as np
 from typing import Dict
 import logging
 from api.models import PatientData
+from api.constants import (
+    RANDOM_TEST_DATA_EXAMPLE,
+    HIGH_RISK_TEST_DATA_EXAMPLE,
+    LOW_RISK_TEST_DATA_EXAMPLE,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -93,63 +98,9 @@ def generate_sample_patient_data(risk_level: str = "random") -> Dict:
             "content": {
                 "application/json": {
                     "examples": {
-                        "random": {
-                            "summary": "Random patient data",
-                            "description": "Randomly generated patient with mixed risk factors",
-                            "value": {
-                                "age": 55,
-                                "sex": 1,
-                                "cp": 2,
-                                "trestbps": 140,
-                                "chol": 250,
-                                "fbs": 1,
-                                "restecg": 1,
-                                "thalach": 160,
-                                "exang": 0,
-                                "oldpeak": 1.5,
-                                "slope": 1,
-                                "ca": 1,
-                                "thal": 1,
-                            },
-                        },
-                        "high_risk": {
-                            "summary": "High risk patient data",
-                            "description": "Generated patient with high-risk profile",
-                            "value": {
-                                "age": 68,
-                                "sex": 1,
-                                "cp": 3,
-                                "trestbps": 165,
-                                "chol": 320,
-                                "fbs": 1,
-                                "restecg": 2,
-                                "thalach": 120,
-                                "exang": 1,
-                                "oldpeak": 3.5,
-                                "slope": 2,
-                                "ca": 2,
-                                "thal": 2,
-                            },
-                        },
-                        "low_risk": {
-                            "summary": "Low risk patient data",
-                            "description": "Generated patient with low-risk profile",
-                            "value": {
-                                "age": 42,
-                                "sex": 0,
-                                "cp": 0,
-                                "trestbps": 118,
-                                "chol": 185,
-                                "fbs": 0,
-                                "restecg": 0,
-                                "thalach": 175,
-                                "exang": 0,
-                                "oldpeak": 0.3,
-                                "slope": 1,
-                                "ca": 0,
-                                "thal": 0,
-                            },
-                        },
+                        "random": RANDOM_TEST_DATA_EXAMPLE,
+                        "high_risk": HIGH_RISK_TEST_DATA_EXAMPLE,
+                        "low_risk": LOW_RISK_TEST_DATA_EXAMPLE,
                     }
                 }
             },

@@ -5,6 +5,7 @@ Health and status endpoints
 from fastapi import APIRouter
 from api.models import HealthResponse
 from api.dependencies import get_model
+from api.constants import API_VERSION, API_ENDPOINTS
 
 router = APIRouter()
 
@@ -23,16 +24,9 @@ async def root():
     """
     return {
         "message": "Heart Disease Prediction API",
-        "version": "1.0.0",
+        "version": API_VERSION,
         "status": "running",
-        "endpoints": {
-            "health": "/health",
-            "predict": "/predict",
-            "model_info": "/model/info",
-            "generate_test_data": "/generate-test-data",
-            "docs": "/docs",
-            "metrics": "/metrics",
-        },
+        "endpoints": API_ENDPOINTS,
     }
 
 
@@ -57,5 +51,5 @@ async def health_check():
     return {
         "status": "healthy" if model_loaded else "degraded",
         "model_loaded": model_loaded,
-        "version": "1.0.0",
+        "version": API_VERSION,
     }

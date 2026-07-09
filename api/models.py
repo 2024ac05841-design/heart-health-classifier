@@ -3,6 +3,7 @@ Pydantic models for API request/response schemas
 """
 
 from pydantic import BaseModel, Field
+from api.constants import HIGH_RISK_PATIENT_EXAMPLE, LOW_RISK_PATIENT_EXAMPLE
 
 
 class PatientData(BaseModel):
@@ -80,48 +81,7 @@ class PatientData(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "examples": [
-                {
-                    "name": "High Risk Patient",
-                    "summary": "Patient with high heart disease risk",
-                    "description": "Example of a patient profile indicating higher likelihood of heart disease",
-                    "value": {
-                        "age": 63,
-                        "sex": 1,
-                        "cp": 3,
-                        "trestbps": 145,
-                        "chol": 233,
-                        "fbs": 1,
-                        "restecg": 0,
-                        "thalach": 150,
-                        "exang": 0,
-                        "oldpeak": 2.3,
-                        "slope": 0,
-                        "ca": 0,
-                        "thal": 1,
-                    },
-                },
-                {
-                    "name": "Low Risk Patient",
-                    "summary": "Patient with low heart disease risk",
-                    "description": "Example of a patient profile indicating lower likelihood of heart disease",
-                    "value": {
-                        "age": 45,
-                        "sex": 0,
-                        "cp": 0,
-                        "trestbps": 120,
-                        "chol": 180,
-                        "fbs": 0,
-                        "restecg": 0,
-                        "thalach": 170,
-                        "exang": 0,
-                        "oldpeak": 0.0,
-                        "slope": 1,
-                        "ca": 0,
-                        "thal": 0,
-                    },
-                },
-            ]
+            "examples": [HIGH_RISK_PATIENT_EXAMPLE, LOW_RISK_PATIENT_EXAMPLE]
         }
 
 

@@ -7,6 +7,13 @@ import pandas as pd
 import logging
 from api.models import PatientData, PredictionResponse, ErrorResponse
 from api.dependencies import get_model, get_scaler, get_feature_names
+from api.constants import (
+    HIGH_RISK_PREDICTION_EXAMPLE,
+    LOW_RISK_PREDICTION_EXAMPLE,
+    ERROR_INVALID_INPUT,
+    ERROR_PREDICTION_FAILED,
+    ERROR_MODEL_NOT_LOADED,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -25,26 +32,8 @@ logger = logging.getLogger(__name__)
             "content": {
                 "application/json": {
                     "examples": {
-                        "high_risk": {
-                            "summary": "High risk result",
-                            "description": "Patient with high probability of heart disease",
-                            "value": {
-                                "prediction": 1,
-                                "prediction_label": "Disease Present",
-                                "confidence": 0.85,
-                                "risk_score": 0.85,
-                            },
-                        },
-                        "low_risk": {
-                            "summary": "Low risk result",
-                            "description": "Patient with low probability of heart disease",
-                            "value": {
-                                "prediction": 0,
-                                "prediction_label": "No Disease",
-                                "confidence": 0.92,
-                                "risk_score": 0.08,
-                            },
-                        },
+                        "high_risk": HIGH_RISK_PREDICTION_EXAMPLE,
+                        "low_risk": LOW_RISK_PREDICTION_EXAMPLE,
                     }
                 }
             },
@@ -52,25 +41,17 @@ logger = logging.getLogger(__name__)
         400: {
             "description": "Invalid input data",
             "model": ErrorResponse,
-            "content": {
-                "application/json": {"example": {"detail": "Invalid feature values"}}
-            },
+            "content": {"application/json": {"example": ERROR_INVALID_INPUT}},
         },
         500: {
             "description": "Prediction failed due to server error",
             "model": ErrorResponse,
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Prediction failed: Internal server error"}
-                }
-            },
+            "content": {"application/json": {"example": ERROR_PREDICTION_FAILED}},
         },
         503: {
             "description": "Model not loaded or unavailable",
             "model": ErrorResponse,
-            "content": {
-                "application/json": {"example": {"detail": "Model not loaded"}}
-            },
+            "content": {"application/json": {"example": ERROR_MODEL_NOT_LOADED}},
         },
     },
 )

@@ -5,6 +5,7 @@ Model information endpoint
 from fastapi import APIRouter, HTTPException, status
 from api.models import ErrorResponse
 from api.dependencies import get_model, get_scaler, get_feature_names
+from api.constants import MODEL_INFO_EXAMPLE, ERROR_MODEL_NOT_LOADED
 
 router = APIRouter()
 
@@ -17,37 +18,12 @@ router = APIRouter()
     responses={
         200: {
             "description": "Model information retrieved successfully",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "model_type": "RandomForestClassifier",
-                        "features": [
-                            "age",
-                            "sex",
-                            "cp",
-                            "trestbps",
-                            "chol",
-                            "fbs",
-                            "restecg",
-                            "thalach",
-                            "exang",
-                            "oldpeak",
-                            "slope",
-                            "ca",
-                            "thal",
-                        ],
-                        "n_features": 13,
-                        "scaler_loaded": True,
-                    }
-                }
-            },
+            "content": {"application/json": {"example": MODEL_INFO_EXAMPLE}},
         },
         503: {
             "description": "Model not loaded",
             "model": ErrorResponse,
-            "content": {
-                "application/json": {"example": {"detail": "Model not loaded"}}
-            },
+            "content": {"application/json": {"example": ERROR_MODEL_NOT_LOADED}},
         },
     },
 )
