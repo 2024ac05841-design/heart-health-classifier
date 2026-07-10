@@ -130,7 +130,7 @@ class HealthResponse(BaseModel):
     """Health check response model"""
 
     status: str = Field(..., description="Service status", example="healthy")
-    model_loaded: bool = Field(
+    ml_model_loaded: bool = Field(
         ..., description="Whether ML model is loaded", example=True
     )
     version: str = Field(..., description="API version", example="1.0.0")

@@ -31,7 +31,7 @@ def test_health_check():
     assert response.status_code == 200
     data = response.json()
     assert "status" in data
-    assert "model_loaded" in data
+    assert "ml_model_loaded" in data
 
 
 def test_predict_endpoint_validation():

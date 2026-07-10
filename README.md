@@ -518,7 +518,7 @@ Health check endpoint.
 ```json
 {
   "status": "healthy",
-  "model_loaded": true,
+  "ml_model_loaded": true,
   "version": "1.0.0"
 }
 ```

@@ -48,9 +48,9 @@ async def health_check():
     Used by Kubernetes liveness and readiness probes.
     """
     model = get_model()
-    model_loaded = model is not None
+    ml_model_loaded = model is not None
     return {
-        "status": "healthy" if model_loaded else "degraded",
-        "model_loaded": model_loaded,
+        "status": "healthy" if ml_model_loaded else "degraded",
+        "ml_model_loaded": ml_model_loaded,
         "version": API_VERSION,
     }
