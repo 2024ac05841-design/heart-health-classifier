@@ -229,12 +229,17 @@ data:
       - url: http://loki:3100/loki/api/v1/push
 
     scrape_configs:
-      - job_name: kubernetes-pods
+      - job_name: heart-disease-api
         static_configs:
           - targets:
               - localhost
             labels:
-              job: kubernetes-pods
-              __path__: /var/log/pods/*/*/*.log
+              job: heart-disease-api
+              app: heart-disease-api          # ← what the Grafana dashboard filters on
+              __path__: /var/log/pods/default_heart-disease-api*/*/*.log
         pipeline_stages:
-          - docker: {}
+          - cri: {}
+          - regex:
+              expression: '.* - (?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - .*'
+          - labels:
+              level:
