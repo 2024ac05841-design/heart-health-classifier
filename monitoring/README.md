@@ -40,11 +40,31 @@ Once deployed, access the monitoring dashboards:
 6. Set URL to: `http://prometheus:9090`
 7. Click **Save & Test**
 
-### 2. Create Dashboard
+### 2. Import Pre-Built Dashboard
 
-Import a pre-built dashboard or create custom panels:
+We've created a comprehensive dashboard for you!
 
-#### Key Metrics to Track
+1. In Grafana, click **Dashboards** → **Import**
+2. Click **Upload JSON file**
+3. Select `monitoring/grafana-dashboard.json`
+4. Select your Prometheus data source
+5. Click **Import**
+
+**Dashboard includes:**
+- 📊 Model Status & Health
+- 🚀 Request Rate & Latency
+- 🎯 Prediction Distribution (Disease vs No Disease)
+- 📈 Risk Level Distribution (High/Medium/Low)
+- ⚡ Model Inference Time (p50, p95, p99)
+- 🔍 Prediction Confidence Tracking
+- 💾 Memory & CPU Usage
+- 📉 Error Rate Monitoring
+
+The dashboard auto-refreshes every 10 seconds and shows the last hour of data.
+
+#### Alternatively: Create Custom Panels
+
+If you want to build your own panels, use these PromQL queries:
 
 **API Performance:**
 ```promql
