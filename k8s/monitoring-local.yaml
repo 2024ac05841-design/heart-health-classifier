@@ -282,6 +282,7 @@ data:
         uid: loki
         jsonData:
           maxLines: 1000
+          timeout: 60
 ---
 # Grafana Dashboard Provisioning Config  
 apiVersion: v1
