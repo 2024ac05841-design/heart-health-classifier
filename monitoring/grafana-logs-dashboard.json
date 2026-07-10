@@ -282,7 +282,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{pod_name=~\"$pod_name\", level=~\"$log_level\"} |~ `$search_query`",
+          "expr": "{pod_name=~\"$pod_name\", level=~\"$log_level\"}",
           "refId": "A"
         }
       ],
