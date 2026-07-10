@@ -40,15 +40,20 @@ Once deployed, access the monitoring dashboards:
 6. Set URL to: `http://prometheus:9090`
 7. Click **Save & Test**
 
-### 2. Import Pre-Built Dashboard
+### 2. Dashboard Auto-Loaded! 🎉
 
-We've created a comprehensive dashboard for you!
+**Good news:** The dashboard is automatically provisioned when you deploy the monitoring stack!
 
-1. In Grafana, click **Dashboards** → **Import**
-2. Click **Upload JSON file**
-3. Select `monitoring/grafana-dashboard.json`
-4. Select your Prometheus data source
-5. Click **Import**
+When you run `kubectl apply -f k8s/monitoring-local.yaml`, Grafana will:
+- ✅ Automatically configure Prometheus as a datasource
+- ✅ Automatically load the Heart Disease API dashboard
+- ✅ Persist the dashboard (no need to re-import after restart)
+
+**Just log in and it's ready:**
+1. Open http://localhost:30030
+2. Log in with **admin/admin**
+3. Go to **Dashboards** → **Heart Disease Prediction API - ML Monitoring**
+4. Done! The dashboard is already configured with all metrics.
 
 **Dashboard includes:**
 - 📊 Model Status & Health
@@ -62,7 +67,25 @@ We've created a comprehensive dashboard for you!
 
 The dashboard auto-refreshes every 10 seconds and shows the last hour of data.
 
-#### Alternatively: Create Custom Panels
+**Want to customize?** The dashboard allows UI updates, so you can:
+- Add new panels
+- Modify existing visualizations  
+- Change time ranges and refresh rates
+- Export your customized version
+
+Your changes will persist across pod restarts!
+
+#### Manual Import (if needed)
+
+If you want to import the dashboard manually or on a different Grafana instance:
+
+1. In Grafana, click **Dashboards** → **Import**
+2. Click **Upload JSON file**
+3. Select `monitoring/grafana-dashboard.json`
+4. Select your Prometheus data source
+5. Click **Import**
+
+#### Create Additional Custom Panels
 
 If you want to build your own panels, use these PromQL queries:
 
