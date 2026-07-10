@@ -303,26 +303,17 @@
       {
         "current": {
           "selected": true,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
+          "text": "heart-disease-api",
+          "value": "heart-disease-api"
         },
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "Pod Name",
-        "multi": true,
+        "multi": false,
         "name": "pod_name",
         "options": [
           {
             "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          {
-            "selected": false,
             "text": "heart-disease-api",
             "value": "heart-disease-api"
           },
