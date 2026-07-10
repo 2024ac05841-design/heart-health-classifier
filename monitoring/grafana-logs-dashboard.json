@@ -310,23 +310,47 @@
             "$__all"
           ]
         },
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "definition": "label_values(count_over_time({level=~\".+\"}[$__range]), pod_name)",
         "hide": 0,
         "includeAll": true,
         "label": "Pod Name",
         "multi": true,
         "name": "pod_name",
-        "options": [],
-        "query": "label_values(count_over_time({level=~\".+\"}[$__range]), pod_name)",
-        "refresh": 1,
-        "regex": "",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "heart-disease-api",
+            "value": "heart-disease-api.*"
+          },
+          {
+            "selected": false,
+            "text": "grafana",
+            "value": "grafana.*"
+          },
+          {
+            "selected": false,
+            "text": "loki",
+            "value": "loki.*"
+          },
+          {
+            "selected": false,
+            "text": "prometheus",
+            "value": "prometheus.*"
+          },
+          {
+            "selected": false,
+            "text": "promtail",
+            "value": "promtail.*"
+          }
+        ],
+        "query": "heart-disease-api.*,grafana.*,loki.*,prometheus.*,promtail.*",
+        "queryValue": "",
         "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
+        "type": "custom"
       },
       {
         "current": {
