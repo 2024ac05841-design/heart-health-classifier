@@ -82,3 +82,7 @@ secrets.yaml
 # Assignment PDFs and redundant scripts
 project-docs/*.pdf
 *.pdf
+
+# Temporary files
+temp-*.txt
+*.tmp

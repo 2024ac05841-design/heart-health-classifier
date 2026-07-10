@@ -30,100 +30,34 @@ kubectl get svc loki
 Once deployed, access the monitoring dashboards:
 
 - **Prometheus UI**: http://localhost:30090
-- **Grafana Dashboards**: http://localhost:30030
-  - Username: `admin`
-  - Password: `admin`
-  - **Metrics Dashboard**: "Heart Disease Prediction API - ML Monitoring"
-  - **Logs Dashboard**: "Heart Disease API - Logs & Filtering"
+- **Grafana Dashboards**: http://localhost:30030 (Login: admin/admin)
 
-## 📈 Setting Up Grafana
+## 📊 Available Dashboards
 
-### 1. Add Prometheus Data Source
+All dashboards are automatically provisioned and ready to use:
 
-1. Open Grafana at http://localhost:30030
-2. Log in with `admin/admin`
-3. Go to **Configuration** → **Data Sources**
-4. Click **Add data source**
-5. Select **Prometheus**
-6. Set URL to: `http://prometheus:9090`
-7. Click **Save & Test**
+### 🏠 Infrastructure Overview - System Health (Home Page)
+Infrastructure health dashboard showing real-time status, resource usage, and metrics for all monitoring pods.
 
-### 2. Dashboard Auto-Loaded! 🎉
+**16 Panels:**
+- Pod status indicators (Heart API, Prometheus, Grafana, Loki, Promtail)
+- Memory usage per pod and total
+- CPU usage trends
+- Request rates
+- Uptime tracking
 
-**Good news:** The dashboard is automatically provisioned when you deploy the monitoring stack!
+### 1. Heart Disease Prediction API - ML Monitoring
+Main monitoring dashboard with 14 panels tracking API performance and ML metrics.
 
-When you run `kubectl apply -f k8s/monitoring-local.yaml`, Grafana will:
-- ✅ Automatically configure Prometheus as a datasource
-- ✅ Automatically load the Heart Disease API dashboard
-- ✅ Persist the dashboard (no need to re-import after restart)
+### 2. Heart Disease API - Advanced Metrics  
+Advanced analysis dashboard with 11 panels for data drift detection and pipeline performance.
 
-**Just log in and it's ready:**
-1. Open http://localhost:30030
-2. Log in with **admin/admin**
-3. Go to **Dashboards** → **Heart Disease Prediction API - ML Monitoring**
-4. Done! The dashboard is already configured with all metrics.
+### 3. Heart Disease API - Logs & Filtering
+Log aggregation dashboard with 6 panels for real-time log filtering and search.
 
-**Dashboard includes:**
-- 📊 Model Status & Health
-- 🚀 Request Rate & Latency
-- 🎯 Prediction Distribution (Disease vs No Disease)
-- 📈 Risk Level Distribution (High/Medium/Low)
-- ⚡ Model Inference Time (p50, p95, p99)
-- 🔍 Prediction Confidence Tracking
-- 💾 Memory & CPU Usage
-- 📉 Error Rate Monitoring
+## 📈 PromQL Queries
 
-The dashboard auto-refreshes every 10 seconds and shows the last hour of data.
-
-**Want to customize?** The dashboard allows UI updates, so you can:
-- Add new panels
-- Modify existing visualizations  
-- Change time ranges and refresh rates
-- Export your customized version
-
-Your changes will persist across pod restarts!
-
-### 3. Logs Dashboard - Filter & Search 🔍
-
-The **Logs Dashboard** provides real-time log filtering and search capabilities powered by Loki.
-
-**Access:** Dashboards → "Heart Disease API - Logs & Filtering"
-
-**Features:**
-- 📊 **Log Volume Graph**: Visual timeline of log levels (INFO, WARNING, ERROR)
-- 🚨 **Error Logs Panel**: Auto-filtered for errors, exceptions, and failures
-- 🎯 **Prediction Logs Panel**: Shows all prediction-related logs
-- 🤖 **Model & Artifacts Logs**: Tracks model loading, artifacts, scaler info
-- 📊 **Performance Metrics Logs**: Displays confidence, risk, inference time logs
-- 📝 **Live Stream**: All application logs in real-time
-
-**Search & Filter:**
-- Use the **Search** box at the top to filter logs by any keyword
-- Select **Log Level** dropdown to filter by INFO, WARNING, ERROR, CRITICAL
-- Click on any log line to expand details
-- All panels auto-refresh every 10 seconds
-
-**Common Searches:**
-- Error patterns: Pre-filtered in Error Logs panel
-- Prediction logs: `Prediction:` or `predict`
-- Model status: `model`, `loaded`, `artifact`, `scaler`
-- Performance: `confidence`, `risk`, `inference`, `preprocess`
-
-**Tip:** The logs dashboard works best after making some predictions to generate log data!
-
-#### Manual Import (if needed)
-
-If you want to import the dashboard manually or on a different Grafana instance:
-
-1. In Grafana, click **Dashboards** → **Import**
-2. Click **Upload JSON file**
-3. Select `monitoring/grafana-dashboard.json`
-4. Select your Prometheus data source
-5. Click **Import**
-
-#### Create Additional Custom Panels
-
-If you want to build your own panels, use these PromQL queries:
+Useful queries for custom panels:
 
 **API Performance:**
 ```promql
@@ -225,35 +159,8 @@ To remove the monitoring stack:
 
 ```bash
 kubectl delete -f k8s/monitoring-local.yaml
+kubectl delete -f k8s/loki-stack.yaml
 ```
-
-## 📊 Sample Grafana Dashboard Queries
-
-### Panel 1: Request Rate
-- **Type**: Graph
-- **Query**: `rate(http_requests_total[5m])`
-- **Legend**: `{{method}} {{handler}}`
-
-### Panel 2: Prediction Distribution
-- **Type**: Pie Chart
-- **Query**: `sum by (prediction_class) (rate(heart_disease_predictions_total[5m]))`
-
-### Panel 3: Response Time
-- **Type**: Graph
-- **Queries**:
-  - p50: `histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))`
-  - p95: `histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))`
-  - p99: `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))`
-
-### Panel 4: Confidence Score
-- **Type**: Gauge
-- **Query**: `avg(rate(heart_disease_prediction_confidence_sum[5m]) / rate(heart_disease_prediction_confidence_count[5m]))`
-- **Min**: 0, **Max**: 1
-
-### Panel 5: Model Inference Time
-- **Type**: Graph
-- **Query**: `histogram_quantile(0.95, rate(model_inference_seconds_bucket[5m])) * 1000`
-- **Unit**: milliseconds
 
 ## 🎯 Best Practices
 
@@ -263,8 +170,3 @@ kubectl delete -f k8s/monitoring-local.yaml
 4. **Resource Limits**: Monitor Prometheus memory usage, increase limits if needed
 5. **Data Retention**: Configure retention period based on your needs (default: 15 days)
 
-## 📚 Resources
-
-- [Prometheus Documentation](https://prometheus.io/docs/)
-- [Grafana Documentation](https://grafana.com/docs/)
-- [PromQL Query Examples](https://prometheus.io/docs/prometheus/latest/querying/examples/)
