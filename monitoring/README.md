@@ -10,13 +10,19 @@ This directory contains monitoring configurations for the Heart Disease Predicti
 # Deploy Prometheus and Grafana
 kubectl apply -f k8s/monitoring-local.yaml
 
+# Deploy Loki for log aggregation
+kubectl apply -f k8s/loki-stack.yaml
+
 # Check deployment status
 kubectl get pods -l app=prometheus
 kubectl get pods -l app=grafana
+kubectl get pods -l app=loki
+kubectl get pods -l app=promtail
 
 # View services
 kubectl get svc prometheus
 kubectl get svc grafana
+kubectl get svc loki
 ```
 
 ### Access Dashboards
@@ -24,9 +30,11 @@ kubectl get svc grafana
 Once deployed, access the monitoring dashboards:
 
 - **Prometheus UI**: http://localhost:30090
-- **Grafana Dashboard**: http://localhost:30030
+- **Grafana Dashboards**: http://localhost:30030
   - Username: `admin`
   - Password: `admin`
+  - **Metrics Dashboard**: "Heart Disease Prediction API - ML Monitoring"
+  - **Logs Dashboard**: "Heart Disease API - Logs & Filtering"
 
 ## 📈 Setting Up Grafana
 
@@ -74,6 +82,34 @@ The dashboard auto-refreshes every 10 seconds and shows the last hour of data.
 - Export your customized version
 
 Your changes will persist across pod restarts!
+
+### 3. Logs Dashboard - Filter & Search 🔍
+
+The **Logs Dashboard** provides real-time log filtering and search capabilities powered by Loki.
+
+**Access:** Dashboards → "Heart Disease API - Logs & Filtering"
+
+**Features:**
+- 📊 **Log Volume Graph**: Visual timeline of log levels (INFO, WARNING, ERROR)
+- 🚨 **Error Logs Panel**: Auto-filtered for errors, exceptions, and failures
+- 🎯 **Prediction Logs Panel**: Shows all prediction-related logs
+- 🤖 **Model & Artifacts Logs**: Tracks model loading, artifacts, scaler info
+- 📊 **Performance Metrics Logs**: Displays confidence, risk, inference time logs
+- 📝 **Live Stream**: All application logs in real-time
+
+**Search & Filter:**
+- Use the **Search** box at the top to filter logs by any keyword
+- Select **Log Level** dropdown to filter by INFO, WARNING, ERROR, CRITICAL
+- Click on any log line to expand details
+- All panels auto-refresh every 10 seconds
+
+**Common Searches:**
+- Error patterns: Pre-filtered in Error Logs panel
+- Prediction logs: `Prediction:` or `predict`
+- Model status: `model`, `loaded`, `artifact`, `scaler`
+- Performance: `confidence`, `risk`, `inference`, `preprocess`
+
+**Tip:** The logs dashboard works best after making some predictions to generate log data!
 
 #### Manual Import (if needed)
 
