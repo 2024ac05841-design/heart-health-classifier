@@ -64,6 +64,24 @@ spec:
     protocol: TCP
     name: http
 ---
+# Promtail Service (for Prometheus scraping)
+apiVersion: v1
+kind: Service
+metadata:
+  name: promtail
+  labels:
+    app: promtail
+    environment: local
+spec:
+  type: ClusterIP
+  selector:
+    app: promtail
+  ports:
+  - port: 9080
+    targetPort: 9080
+    protocol: TCP
+    name: http-metrics
+---
 # Promtail DaemonSet (collects logs from all pods)
 apiVersion: apps/v1
 kind: DaemonSet
@@ -232,17 +250,89 @@ data:
       - url: http://loki:3100/loki/api/v1/push
 
     scrape_configs:
-      - job_name: heart-disease-api
+      - job_name: all-pods
         static_configs:
           - targets:
               - localhost
             labels:
-              job: heart-disease-api
-              app: heart-disease-api          # ← what the Grafana dashboard filters on
-              __path__: /var/log/pods/default_heart-disease-api*/*/*.log
+              job: kubernetes-pods
+              __path__: /var/log/pods/default_*/*/*.log
         pipeline_stages:
-          - cri: {}
+          # Extract log content from JSON
+          - json:
+              expressions:
+                log: log
+                stream: stream
+          
+          # Extract pod name from file path
           - regex:
-              expression: '.* - (?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - .*'
+              expression: '^/var/log/pods/default_(?P<pod_name>[^_]+).*'
+              source: filename
           - labels:
-              level:
+              pod_name:
+          
+          # Extract log level for Heart API (Python FastAPI format: "INFO: ...")
+          - match:
+              selector: '{pod_name=~"heart-disease-api.*"}'
+              stages:
+                - regex:
+                    expression: '^(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL):'
+                    source: log
+                - labels:
+                    level:
+          
+          # Extract log level for Loki (level=info format)
+          - match:
+              selector: '{pod_name=~"loki.*"}'
+              stages:
+                - regex:
+                    expression: 'level=(?P<level>debug|info|warn|warning|error|critical)'
+                    source: log
+                - template:
+                    source: level
+                    template: '{{ ToUpper .Value }}'
+                - labels:
+                    level:
+          
+          # Extract log level for Prometheus (level=info format)
+          - match:
+              selector: '{pod_name=~"prometheus.*"}'
+              stages:
+                - regex:
+                    expression: 'level=(?P<level>DEBUG|INFO|WARN|WARNING|ERROR|CRITICAL|debug|info|warn|warning|error|critical)'
+                    source: log
+                - template:
+                    source: level
+                    template: '{{ ToUpper .Value }}'
+                - labels:
+                    level:
+          
+          # Extract log level for Promtail (level=info format)
+          - match:
+              selector: '{pod_name=~"promtail.*"}'
+              stages:
+                - regex:
+                    expression: 'level=(?P<level>debug|info|warn|warning|error|critical)'
+                    source: log
+                - template:
+                    source: level
+                    template: '{{ ToUpper .Value }}'
+                - labels:
+                    level:
+          
+          # Extract log level for Grafana (various formats)
+          - match:
+              selector: '{pod_name=~"grafana.*"}'
+              stages:
+                - regex:
+                    expression: 'level=(?P<level>debug|info|warn|warning|error|critical|dbug|eror|crit)'
+                    source: log
+                - template:
+                    source: level
+                    template: '{{ ToUpper .Value }}'
+                - labels:
+                    level:
+          
+          # Output clean log line
+          - output:
+              source: log
