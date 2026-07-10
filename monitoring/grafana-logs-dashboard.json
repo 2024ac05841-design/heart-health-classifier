@@ -290,7 +290,7 @@
       "type": "logs"
     }
   ],
-  "refresh": "10s",
+  "refresh": "1m",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [
@@ -370,7 +370,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-3m",
     "to": "now"
   },
   "timepicker": {},
