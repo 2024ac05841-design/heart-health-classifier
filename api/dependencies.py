@@ -33,13 +33,13 @@ def load_model_artifacts():
             feature_names = None
 
         logger.info("✓ Model and artifacts loaded successfully")
-        
+
         # Set Prometheus metrics for model monitoring
         model_type = type(model).__name__
         model_version = "1.0.0"  # Can be read from metadata file if available
         active_model_info.labels(model_type=model_type, version=model_version).set(1)
         model_loaded_status.set(1)
-        
+
         logger.info("=" * 80)
         logger.info("🫀 Heart Disease Prediction API is ready!")
         logger.info("=" * 80)
@@ -48,8 +48,12 @@ def load_model_artifacts():
         logger.info("")
         logger.info("📊 Metrics & Monitoring:")
         logger.info("   • Prometheus Metrics:   http://localhost:30080/metrics")
-        logger.info("   • Prometheus Dashboard: http://localhost:30090 (deploy k8s/monitoring-local.yaml)")
-        logger.info("   • Grafana Dashboard:    http://localhost:30030 (deploy k8s/monitoring-local.yaml)")
+        logger.info(
+            "   • Prometheus Dashboard: http://localhost:30090 (deploy k8s/monitoring-local.yaml)"
+        )
+        logger.info(
+            "   • Grafana Dashboard:    http://localhost:30030 (deploy k8s/monitoring-local.yaml)"
+        )
         logger.info("     Default credentials: admin/admin")
         logger.info("")
         logger.info("🧪 Testing the API:")

@@ -135,14 +135,15 @@ async def predict(patient: PatientData):
 
         # Prediction label
         prediction_label = "Disease Present" if prediction == 1 else "No Disease"
-        
+
         # Determine risk level for metrics
-        risk_level = "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
-        
+        risk_level = (
+            "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
+        )
+
         # Record prediction metrics
         predictions_counter.labels(
-            prediction_class=prediction_label,
-            risk_level=risk_level
+            prediction_class=prediction_label, risk_level=risk_level
         ).inc()
         prediction_confidence_hist.observe(confidence)
         prediction_risk_score_hist.observe(risk_score)
