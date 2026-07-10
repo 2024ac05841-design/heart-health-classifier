@@ -1,0 +1,240 @@
+# Prometheus Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    environment: local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        ports:
+        - containerPort: 9090
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+        - name: prometheus-storage
+          mountPath: /prometheus
+        args:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus'
+          - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+          - '--web.console.templates=/usr/share/prometheus/consoles'
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config
+      - name: prometheus-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    environment: local
+spec:
+  type: NodePort
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    targetPort: 9090
+    nodePort: 30090  # Access via http://localhost:30090
+    protocol: TCP
+    name: http
+---
+# Grafana Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+    environment: local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:latest
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        - name: GF_SECURITY_ADMIN_USER
+          value: "admin"
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: "admin"
+        - name: GF_INSTALL_PLUGINS
+          value: ""
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: grafana-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+    environment: local
+spec:
+  type: NodePort
+  selector:
+    app: grafana
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30030  # Access via http://localhost:30030
+    protocol: TCP
+    name: http
+---
+# ConfigMap for Prometheus configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    app: prometheus
+    environment: local
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    # Load alerting rules
+    rule_files:
+      - '/etc/prometheus/alerts.yml'
+
+    scrape_configs:
+      - job_name: 'heart-disease-api'
+        static_configs:
+          - targets: ['heart-disease-api-service:80']
+        metrics_path: '/metrics'
+        scrape_interval: 10s
+
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+  alerts.yml: |
+    groups:
+      - name: api_alerts
+        interval: 30s
+        rules:
+          # High error rate detection
+          - alert: HighErrorRate
+            expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+            for: 2m
+            labels:
+              severity: critical
+            annotations:
+              summary: "High error rate detected in API"
+              description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+          
+          # Slow response detection
+          - alert: SlowAPIResponses
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1.0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "API responses are slow"
+              description: "95th percentile latency is {{ $value }}s (threshold: 1.0s)"
+          
+          # Model not loaded
+          - alert: ModelNotLoaded
+            expr: model_loaded_status == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "ML model is not loaded"
+              description: "The heart disease prediction model failed to load"
+          
+          # Low prediction confidence
+          - alert: LowPredictionConfidence
+            expr: rate(heart_disease_prediction_confidence_sum[5m]) / rate(heart_disease_prediction_confidence_count[5m]) < 0.6
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Low average prediction confidence"
+              description: "Average prediction confidence is {{ $value | humanizePercentage }} over last 5 minutes"
+          
+          # High prediction volume
+          - alert: HighPredictionVolume
+            expr: rate(heart_disease_predictions_total[1m]) > 100
+            for: 5m
+            labels:
+              severity: info
+            annotations:
+              summary: "High prediction request volume"
+              description: "Receiving {{ $value }} predictions per second - consider scaling"
+          
+          # API service down
+          - alert: APIServiceDown
+            expr: up{job="heart-disease-api"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "API service is down"
+              description: "The heart disease API service has been down for more than 1 minute"

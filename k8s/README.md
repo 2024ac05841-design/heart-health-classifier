@@ -101,6 +101,36 @@ curl -X POST http://<EXTERNAL-IP>/predict \
 
 ## Monitoring
 
+### Deploy Monitoring Stack
+
+Deploy Prometheus and Grafana for metrics visualization:
+
+```bash
+# Deploy monitoring stack
+kubectl apply -f k8s/monitoring-local.yaml
+
+# Check status
+kubectl get pods -l app=prometheus
+kubectl get pods -l app=grafana
+
+# View services
+kubectl get svc prometheus grafana
+```
+
+### Access Monitoring Dashboards
+
+- **Prometheus UI**: http://localhost:30090
+- **Grafana Dashboard**: http://localhost:30030 (admin/admin)
+- **API Metrics Endpoint**: http://localhost:30080/metrics
+
+**First Time Grafana Setup:**
+1. Open http://localhost:30030
+2. Login with admin/admin
+3. Add Prometheus data source: `http://prometheus:9090`
+4. Create dashboards using PromQL queries
+
+See [monitoring/README.md](../monitoring/README.md) for detailed setup and dashboard examples.
+
 ### View Logs
 ```bash
 # Get pod name

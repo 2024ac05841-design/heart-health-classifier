@@ -44,7 +44,7 @@ spec:
             path: /health
             port: 8000
           initialDelaySeconds: 30
-          periodSeconds: 10
+          periodSeconds: 40  # ~75 calls per 50 min
           timeoutSeconds: 5
           failureThreshold: 3
         readinessProbe:
@@ -52,7 +52,7 @@ spec:
             path: /health
             port: 8000
           initialDelaySeconds: 10
-          periodSeconds: 5
+          periodSeconds: 7  # ~428 calls per 50 min (total ~500)
           timeoutSeconds: 3
           failureThreshold: 3
 ---

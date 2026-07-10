@@ -5,6 +5,7 @@ Prediction endpoint
 from fastapi import APIRouter, HTTPException, status
 import pandas as pd
 import logging
+import time
 from api.models import PatientData, PredictionResponse, ErrorResponse
 from api.dependencies import get_model, get_scaler, get_feature_names
 from api.constants import (
@@ -13,6 +14,14 @@ from api.constants import (
     ERROR_INVALID_INPUT,
     ERROR_PREDICTION_FAILED,
     ERROR_MODEL_NOT_LOADED,
+)
+from api.monitoring import (
+    predictions_counter,
+    prediction_confidence_hist,
+    prediction_risk_score_hist,
+    model_inference_time,
+    preprocessing_time,
+    feature_value_hist,
 )
 
 router = APIRouter()
@@ -94,19 +103,29 @@ async def predict(patient: PatientData):
         # Convert input to DataFrame
         input_data = pd.DataFrame([patient.dict()])
 
+        # Track feature values for data drift detection
+        for feature, value in patient.dict().items():
+            feature_value_hist.labels(feature_name=feature).observe(float(value))
+
         # Ensure correct feature order
         if feature_names:
             input_data = input_data[feature_names]
 
-        # Scale features
+        # Measure preprocessing time
+        preprocess_start = time.time()
         if scaler is not None:
             input_scaled = scaler.transform(input_data)
         else:
             input_scaled = input_data.values
+        preprocess_duration = time.time() - preprocess_start
+        preprocessing_time.observe(preprocess_duration)
 
-        # Make prediction
+        # Measure model inference time
+        inference_start = time.time()
         prediction = model.predict(input_scaled)[0]
         prediction_proba = model.predict_proba(input_scaled)[0]
+        inference_duration = time.time() - inference_start
+        model_inference_time.observe(inference_duration)
 
         # Get confidence (probability of predicted class)
         confidence = float(prediction_proba[prediction])
@@ -116,10 +135,23 @@ async def predict(patient: PatientData):
 
         # Prediction label
         prediction_label = "Disease Present" if prediction == 1 else "No Disease"
+        
+        # Determine risk level for metrics
+        risk_level = "high" if risk_score > 0.7 else "medium" if risk_score > 0.3 else "low"
+        
+        # Record prediction metrics
+        predictions_counter.labels(
+            prediction_class=prediction_label,
+            risk_level=risk_level
+        ).inc()
+        prediction_confidence_hist.observe(confidence)
+        prediction_risk_score_hist.observe(risk_score)
 
-        # Log prediction
+        # Log prediction with timing
         logger.info(
-            f"Prediction: {prediction_label}, Confidence: {confidence:.2f}, Risk: {risk_score:.2f}"
+            f"Prediction: {prediction_label}, Confidence: {confidence:.2f}, "
+            f"Risk: {risk_score:.2f}, Inference: {inference_duration*1000:.2f}ms, "
+            f"Preprocess: {preprocess_duration*1000:.2f}ms"
         )
 
         return PredictionResponse(

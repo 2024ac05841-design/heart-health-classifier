@@ -4,6 +4,7 @@ Dependency injection for model loading and shared state
 
 import joblib
 import logging
+from api.monitoring import active_model_info, model_loaded_status
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -32,11 +33,24 @@ def load_model_artifacts():
             feature_names = None
 
         logger.info("✓ Model and artifacts loaded successfully")
+        
+        # Set Prometheus metrics for model monitoring
+        model_type = type(model).__name__
+        model_version = "1.0.0"  # Can be read from metadata file if available
+        active_model_info.labels(model_type=model_type, version=model_version).set(1)
+        model_loaded_status.set(1)
+        
         logger.info("=" * 80)
         logger.info("🫀 Heart Disease Prediction API is ready!")
         logger.info("=" * 80)
         logger.info("📚 Interactive API Documentation (Swagger UI):")
         logger.info("   • http://localhost:30080/docs")
+        logger.info("")
+        logger.info("📊 Metrics & Monitoring:")
+        logger.info("   • Prometheus Metrics:   http://localhost:30080/metrics")
+        logger.info("   • Prometheus Dashboard: http://localhost:30090 (deploy k8s/monitoring-local.yaml)")
+        logger.info("   • Grafana Dashboard:    http://localhost:30030 (deploy k8s/monitoring-local.yaml)")
+        logger.info("     Default credentials: admin/admin")
         logger.info("")
         logger.info("🧪 Testing the API:")
         logger.info("   1. Visit the Swagger UI at /docs")
@@ -49,11 +63,17 @@ def load_model_artifacts():
         logger.info("   • POST /predict             - Heart disease prediction")
         logger.info("   • GET  /model/info          - Model information")
         logger.info("   • GET  /generate-test-data  - Generate sample test data")
-        logger.info("   • GET  /metrics             - Prometheus metrics")
+
+        logger.info("")
+        logger.info("📊 Monitoring & Visualization:")
+        logger.info("   • Prometheus Metrics:  http://localhost:30080/metrics")
+        logger.info("   • Grafana Dashboard:   http://localhost:3000")
+        logger.info("     (Default credentials: admin/admin)")
         logger.info("=" * 80)
     except Exception as e:
         logger.error(f"✗ Error loading model: {e}")
         logger.warning("Model not loaded - predictions will fail")
+        model_loaded_status.set(0)
         logger.info("=" * 80)
 
 

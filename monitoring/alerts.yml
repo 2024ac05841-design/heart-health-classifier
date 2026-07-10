@@ -1,0 +1,96 @@
+# Prometheus Alerting Rules for Heart Disease Prediction API
+# These rules define conditions that trigger alerts for monitoring issues
+
+groups:
+  - name: api_alerts
+    interval: 30s
+    rules:
+      # High error rate detection
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected in API"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+      
+      # Slow response detection
+      - alert: SlowAPIResponses
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API responses are slow"
+          description: "95th percentile latency is {{ $value }}s (threshold: 1.0s)"
+      
+      # Memory usage warning
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes > 500000000  # 500MB
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}B (threshold: 500MB)"
+      
+      # Model not loaded
+      - alert: ModelNotLoaded
+        expr: model_loaded_status == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ML model is not loaded"
+          description: "The heart disease prediction model failed to load"
+      
+      # Low prediction confidence
+      - alert: LowPredictionConfidence
+        expr: rate(heart_disease_prediction_confidence_sum[5m]) / rate(heart_disease_prediction_confidence_count[5m]) < 0.6
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low average prediction confidence"
+          description: "Average prediction confidence is {{ $value | humanizePercentage }} over last 5 minutes"
+      
+      # High prediction volume
+      - alert: HighPredictionVolume
+        expr: rate(heart_disease_predictions_total[1m]) > 100
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "High prediction request volume"
+          description: "Receiving {{ $value }} predictions per second - consider scaling"
+      
+      # Slow model inference
+      - alert: SlowModelInference
+        expr: histogram_quantile(0.95, rate(model_inference_seconds_bucket[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model inference is slow"
+          description: "95th percentile inference time is {{ $value }}s (threshold: 0.1s)"
+      
+      # API service down
+      - alert: APIServiceDown
+        expr: up{job="heart-disease-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API service is down"
+          description: "The heart disease API service has been down for more than 1 minute"
+      
+      # High risk predictions spike
+      - alert: HighRiskPredictionsSpike
+        expr: rate(heart_disease_predictions_total{prediction_class="Disease Present"}[5m]) / rate(heart_disease_predictions_total[5m]) > 0.7
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Unusually high rate of high-risk predictions"
+          description: "{{ $value | humanizePercentage }} of predictions are Disease Present"
