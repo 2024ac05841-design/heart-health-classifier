@@ -4,6 +4,7 @@ Unit tests for API endpoints
 
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import MagicMock, patch
 import sys
 import os
 
@@ -11,11 +12,36 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from api.app import app
+from api.database import get_redis
 
-client = TestClient(app)
+
+# Mock Redis client for testing
+@pytest.fixture
+def mock_redis():
+    """Fixture to provide a mock Redis client"""
+    mock = MagicMock()
+    mock.ping.return_value = True
+    mock.incr.return_value = 1
+    mock.hset.return_value = True
+    mock.zadd.return_value = True
+    mock.sadd.return_value = True
+    return mock
 
 
-def test_root_endpoint():
+@pytest.fixture
+def client(mock_redis):
+    """Fixture to provide a test client with mocked Redis"""
+    # Override the Redis dependency
+    app.dependency_overrides[get_redis] = lambda: mock_redis
+    
+    with TestClient(app) as test_client:
+        yield test_client
+    
+    # Clean up
+    app.dependency_overrides.clear()
+
+
+def test_root_endpoint(client):
     """Test root endpoint"""
     response = client.get("/")
     assert response.status_code == 200
@@ -25,7 +51,7 @@ def test_root_endpoint():
     assert data["status"] == "running"
 
 
-def test_health_check():
+def test_health_check(client):
     """Test health check endpoint"""
     response = client.get("/health")
     assert response.status_code == 200
@@ -34,7 +60,7 @@ def test_health_check():
     assert "ml_model_loaded" in data
 
 
-def test_predict_endpoint_validation():
+def test_predict_endpoint_validation(client):
     """Test prediction endpoint with invalid data"""
     # Missing required fields
     response = client.post("/predict", json={})
@@ -62,7 +88,7 @@ def test_predict_endpoint_validation():
     assert response.status_code == 422
 
 
-def test_predict_endpoint_valid_data():
+def test_predict_endpoint_valid_data(client):
     """Test prediction endpoint with valid data"""
     valid_data = {
         "age": 63,
@@ -94,13 +120,13 @@ def test_predict_endpoint_valid_data():
         assert 0 <= data["risk_score"] <= 1
 
 
-def test_docs_endpoint():
+def test_docs_endpoint(client):
     """Test that OpenAPI docs are available"""
     response = client.get("/docs")
     assert response.status_code == 200
 
 
-def test_openapi_endpoint():
+def test_openapi_endpoint(client):
     """Test that OpenAPI schema is available"""
     response = client.get("/openapi.json")
     assert response.status_code == 200
