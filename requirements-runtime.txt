@@ -2,9 +2,9 @@
 # This is the minimal set for running the API in production
 
 # Core ML Libraries (for model inference)
-# NOTE: Versions updated from requirements.txt to fix numpy._core compatibility
+# NOTE: Pinned to compatible versions to avoid binary incompatibility
 pandas==2.1.0
-numpy>=1.26.0  # Updated for numpy._core compatibility
+numpy==1.25.2  # Compatible with pandas 2.1.0 (avoids binary incompatibility)
 scikit-learn==1.3.0
 
 # Model Loading
