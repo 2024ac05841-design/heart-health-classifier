@@ -96,7 +96,7 @@ spec:
         - name: GF_SECURITY_ADMIN_PASSWORD
           value: "admin"
         - name: GF_INSTALL_PLUGINS
-          value: ""
+          value: "yesoreyeram-infinity-datasource"
         - name: GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH
           value: "/var/lib/grafana/dashboards/grafana-home-dashboard.json"
         volumeMounts:
@@ -303,6 +303,14 @@ data:
         jsonData:
           maxLines: 1000
           timeout: 60
+      - name: Infinity
+        type: yesoreyeram-infinity-datasource
+        access: proxy
+        isDefault: false
+        editable: false
+        uid: infinity
+        jsonData:
+          auth_method: none
 ---
 # Grafana Dashboard Provisioning Config  
 apiVersion: v1
@@ -4346,4 +4354,10 @@ data:
       "version": 0,
       "weekStart": ""
     }
+  grafana-predictions-dashboard.json: |
+    # Prediction History Dashboard JSON
+    # This dashboard will be loaded from the separate file during deployment
+    # To apply: kubectl create configmap grafana-predictions-dashboard --from-file=k8s/grafana-dashboard-predictions.json
+    # Alternatively, the JSON content should be embedded here for auto-provisioning
+    {}
     
