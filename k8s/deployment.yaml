@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: api
-        image: ghcr.io/2024ac05841-design/heart-health-classifier:latest
-        imagePullPolicy: Always
+        image: heart-health-classifier:v1-redis
+        imagePullPolicy: Never
         ports:
         - containerPort: 8000
           name: http
@@ -29,6 +29,12 @@ spec:
           value: "1"
         - name: MODEL_PATH
           value: "/app/models"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_DB
+          value: "0"
         resources:
           requests:
             memory: "256Mi"

@@ -39,6 +39,10 @@ mlflow==2.7.1
 prometheus-client==0.17.1
 prometheus-fastapi-instrumentator==6.1.0
 
+# Database - Redis for lightweight caching & persistence
+redis==5.0.1
+hiredis==2.2.3  # C parser for faster performance
+
 # Utilities
 python-dotenv==1.0.0
 requests==2.31.0

@@ -17,8 +17,9 @@ from prometheus_fastapi_instrumentator import Instrumentator
 import logging
 
 # Import routers
-from api.routers import health, predict, model_info, test_data
+from api.routers import health, predict, model_info, test_data, history
 from api.dependencies import load_model_artifacts
+from api.database import init_redis, close_redis
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -75,10 +76,34 @@ app.include_router(health.router, tags=["Health"])
 app.include_router(predict.router, tags=["Prediction"])
 app.include_router(model_info.router, tags=["Model"])
 app.include_router(test_data.router, tags=["Test Data"])
+app.include_router(history.router, tags=["Prediction History"])
 
 
 # Startup event
 @app.on_event("startup")
 async def startup_event():
     """Initialize application and load ML model"""
+    logger.info("Starting application...")
+
+    # Initialize Redis database
+    try:
+        init_redis()
+        logger.info("Redis initialized successfully")
+    except Exception as e:
+        logger.error(f"Redis initialization failed: {e}")
+        # Continue even if Redis fails - prediction will work without persistence
+
+    # Load ML model artifacts
     load_model_artifacts()
+
+
+# Shutdown event
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on application shutdown"""
+    logger.info("Shutting down application...")
+    try:
+        close_redis()
+        logger.info("Redis connection closed")
+    except Exception as e:
+        logger.error(f"Error closing Redis: {e}")

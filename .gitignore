@@ -37,6 +37,10 @@ mlartifacts/
 mlflow.db
 *.db
 
+# Redis persistence files
+*.rdb
+*.aof
+
 # Models
 *.pkl
 *.joblib

@@ -80,15 +80,21 @@ graph TB
         P --> R[FastAPI Container]
         Q --> R
         R --> S[Trained Model + Scaler]
+        R --> RD[Redis Database]
+        RD --> RD1[Prediction Storage]
+        RD --> RD2[Request History]
     end
     
     subgraph "End Users"
         R --> T[REST API Endpoints]
         T --> U[Predictions]
+        T --> UH[History Queries]
     end
     
     subgraph "Monitoring"
         R --> V[Prometheus Metrics]
+        RD --> RE[Redis Exporter]
+        RE --> V
         V --> W[Grafana Dashboard]
     end
     
@@ -130,7 +136,7 @@ sequenceDiagram
     participant User
     participant API
     participant Model
-    participant MLflow
+    participant Redis
     participant Prometheus
     
     User->>API: POST /predict
@@ -139,8 +145,16 @@ sequenceDiagram
     Model->>Model: Preprocess Data
     Model->>Model: Make Prediction
     Model->>API: Return Prediction
+    API->>Redis: Save Prediction Record
+    Redis->>API: Confirm Save (ID)
     API->>Prometheus: Log Metrics
-    API->>User: JSON Response
+    API->>User: JSON Response with Prediction
+    
+    Note over User,API: Query History
+    User->>API: GET /predictions/history
+    API->>Redis: Query Records
+    Redis->>API: Return Records
+    API->>User: JSON Response with History
     
     Note over User,API: Health Check
     User->>API: GET /health
@@ -153,11 +167,22 @@ sequenceDiagram
 graph TB
     subgraph "Kubernetes Cluster"
         subgraph "Namespace: production"
-            A[ConfigMap] --> B[Deployment]
+            A[ConfigMap] --> B[Deployment: API]
             B --> C[Pod 1: API]
             B --> D[Pod 2: API]
             C --> E[Service: LoadBalancer]
             D --> E
+            
+            R1[Redis ConfigMap] --> R2[Deployment: Redis]
+            R2 --> R3[Pod: Redis]
+            R3 --> R4[Service: Redis]
+            R3 --> R5[PVC: Redis Data]
+            
+            C --> R4
+            D --> R4
+            
+            RE1[Deployment: Redis Exporter] --> RE2[Pod: Exporter]
+            RE2 --> R4
         end
         
         subgraph "Monitoring Stack"
@@ -166,6 +191,7 @@ graph TB
         end
         
         E --> F
+        RE2 --> F
         F --> G
     end
     
@@ -174,6 +200,7 @@ graph TB
     
     style C fill:#42a5f5
     style D fill:#42a5f5
+    style R3 fill:#ff6b6b
     style E fill:#66bb6a
     style F fill:#ffa726
     style G fill:#ab47bc
@@ -229,9 +256,11 @@ graph TB
 
 ### 8. **Monitoring & Logging**
 - Prometheus metrics integration
-- Grafana dashboards (via docker-compose)
+- **Redis metrics via Redis Exporter**
+- **Grafana dashboards** (API metrics + Redis cache monitoring)
 - API request logging
 - Performance monitoring
+- **Prediction history tracking**
 
 ### 9. **Documentation**
 - Comprehensive README with diagrams
@@ -251,11 +280,12 @@ graph TB
 | **Visualization** | Matplotlib, Seaborn, Plotly |
 | **Experiment Tracking** | MLflow |
 | **API Framework** | FastAPI, Uvicorn |
+| **Database** | Redis (in-memory with persistence) |
 | **Testing** | Pytest, Pytest-cov |
 | **Containerization** | Docker, Docker Compose |
 | **Orchestration** | Kubernetes (Minikube/Cloud) |
 | **CI/CD** | GitHub Actions |
-| **Monitoring** | Prometheus, Grafana |
+| **Monitoring** | Prometheus, Grafana, Redis Exporter |
 | **Code Quality** | Flake8, Black, Pylint |
 
 ---
@@ -269,16 +299,33 @@ heart-disease-mlops/
 │       └── ci-cd.yml              # GitHub Actions CI/CD pipeline with model training
 ├── api/
 │   ├── __init__.py
-│   └── app.py                     # FastAPI application
+│   ├── app.py                     # FastAPI application with Redis integration
+│   ├── database.py                # Redis connection management (NEW)
+│   ├── db_models.py               # Redis data models (NEW)
+│   ├── models.py                  # Pydantic request/response models
+│   ├── dependencies.py            # Dependency injection
+│   ├── constants.py               # Application constants
+│   ├── monitoring.py              # Prometheus metrics
+│   └── routers/                   # Modular route handlers
+│       ├── __init__.py
+│       ├── health.py              # Health check
+│       ├── predict.py             # Prediction with Redis storage
+│       ├── model_info.py          # Model information
+│       ├── test_data.py           # Test data generation
+│       └── history.py             # Prediction history queries (NEW)
 ├── data/
 │   ├── raw/                       # Raw dataset storage
 │   ├── create_sample_data.py      # Sample data generator
 │   ├── download_data.py           # Dataset download script
+│   ├── DATABASE.md                # Database integration guide (NEW)
 │   └── README.md                  # Data documentation
 ├── k8s/
 │   ├── deployment-local.yaml      # Kubernetes deployment (local - NodePort)
 │   ├── deployment-cloud.yaml      # Kubernetes deployment (cloud - LoadBalancer)
 │   ├── deployment.yaml            # Generic deployment (backward compatibility)
+│   ├── redis.yaml                 # Redis deployment with persistence (NEW)
+│   ├── redis-exporter.yaml        # Redis metrics exporter (NEW)
+│   ├── grafana-dashboard-redis.json # Redis Grafana dashboard (NEW)
 │   ├── configmap.yaml             # Configuration
 │   └── README.md                  # Kubernetes deployment guide
 ├── models/
@@ -287,11 +334,13 @@ heart-disease-mlops/
 │   ├── best_model.pkl             # Trained model (built in CI/CD, not in git)
 │   └── scaler.pkl                 # Feature scaler (built in CI/CD, not in git)
 ├── monitoring/
-│   └── prometheus.yml             # Prometheus configuration
+│   └── prometheus.yml             # Prometheus configuration (API + Redis metrics)
 ├── project-docs/
 │   ├── CHANGELOG.md               # Version history
 │   ├── COMPLETION_REPORT.md       # Assignment completion report
 │   ├── CONTRIBUTING.md            # Contribution guidelines
+│   ├── DATABASE_COMPARISON.md     # Database technology comparison (NEW)
+│   ├── DATABASE_IMPLEMENTATION.md # Redis implementation details (NEW)
 │   ├── MODEL_CARD.md              # Model documentation
 │   ├── PROJECT_STRUCTURE.md       # Detailed structure
 │   ├── PROJECT_SUMMARY.md         # Project summary
@@ -299,6 +348,7 @@ heart-disease-mlops/
 ├── scripts/
 │   ├── train_model.py             # Main training script
 │   ├── test_api.py                # API testing script
+│   ├── test_database.py           # Redis integration tests (NEW)
 │   ├── docker_commands.sh         # Docker helper commands
 │   └── k8s_commands.sh            # Kubernetes helper commands
 ├── src/
@@ -555,6 +605,77 @@ Predict heart disease risk.
 }
 ```
 
+**Note:** All predictions are automatically saved to Redis for history tracking and analytics.
+
+#### **GET /predictions/history** (NEW)
+Query prediction history with filtering options.
+
+**Query Parameters:**
+- `limit` (default: 100, max: 1000) - Number of records to return
+- `skip` (default: 0) - Records to skip for pagination
+- `prediction_class` (optional: 0 or 1) - Filter by prediction outcome
+- `min_risk_score` (optional: 0.0-1.0) - Minimum risk score filter
+- `max_risk_score` (optional: 0.0-1.0) - Maximum risk score filter
+
+**Example Request:**
+```bash
+curl "http://localhost:8000/predictions/history?limit=10&prediction_class=1"
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "timestamp": "2026-07-11T10:30:00.123456",
+    "patient_data": {...},
+    "prediction": 1,
+    "prediction_label": "Disease Present",
+    "confidence": 0.85,
+    "risk_score": 0.85,
+    "inference_time_ms": 12.5,
+    "preprocessing_time_ms": 3.2
+  }
+]
+```
+
+#### **GET /predictions/stats** (NEW)
+Get aggregated statistics for all predictions.
+
+**Response:**
+```json
+{
+  "total_predictions": 1000,
+  "disease_count": 450,
+  "no_disease_count": 550,
+  "avg_risk_score": 0.52,
+  "avg_confidence": 0.78,
+  "avg_inference_time_ms": 15.3,
+  "avg_preprocessing_time_ms": 4.1
+}
+```
+
+#### **GET /predictions/{id}** (NEW)
+Get a specific prediction by ID.
+
+**Example Request:**
+```bash
+curl "http://localhost:8000/predictions/1"
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "timestamp": "2026-07-11T10:30:00.123456",
+  "patient_data": {...},
+  "prediction": 1,
+  "prediction_label": "Disease Present",
+  "confidence": 0.85,
+  "risk_score": 0.85
+}
+```
+
 #### **GET /model/info**
 Get model information.
 
@@ -639,6 +760,12 @@ kubectl config use-context rancher-desktop  # or 'minikube' for Minikube
 # Verify cluster
 kubectl cluster-info
 
+# Deploy Redis database first
+kubectl apply -f k8s/redis.yaml
+
+# Deploy Redis Exporter for metrics
+kubectl apply -f k8s/redis-exporter.yaml
+
 # Deploy application (uses ghcr.io image with trained model)
 kubectl apply -f k8s/deployment-local.yaml
 
@@ -646,17 +773,33 @@ kubectl apply -f k8s/deployment-local.yaml
 kubectl get pods
 kubectl get services
 
+# Verify Redis is running
+kubectl get pods -l app=redis
+
 # Access API (NodePort 30080)
 curl http://localhost:30080/health
 
+# Test prediction with Redis storage
+curl -X POST "http://localhost:30080/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"age": 63, "sex": 1, "cp": 3, "trestbps": 145, "chol": 233, "fbs": 1, "restecg": 0, "thalach": 150, "exang": 0, "oldpeak": 2.3, "slope": 0, "ca": 0, "thal": 1}'
+
+# Query prediction history
+curl "http://localhost:30080/predictions/history?limit=10"
+
 # View API documentation
 # Open browser: http://localhost:30080/docs
+
+# View Grafana dashboard (Redis metrics)
+# Open browser: http://localhost:30030 (admin/admin)
 
 # View logs
 kubectl logs -l app=heart-disease-api
 
 # Delete deployment
 kubectl delete -f k8s/deployment-local.yaml
+kubectl delete -f k8s/redis-exporter.yaml
+kubectl delete -f k8s/redis.yaml
 ```
 
 #### Using Cloud Kubernetes (GKE/EKS/AKS)

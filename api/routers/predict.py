@@ -2,12 +2,15 @@
 Prediction endpoint
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+import redis
 import pandas as pd
 import logging
 import time
 from api.models import PatientData, PredictionResponse, ErrorResponse
 from api.dependencies import get_model, get_scaler, get_feature_names
+from api.database import get_redis
+from api.db_models import PredictionRecord
 from api.constants import (
     HIGH_RISK_PREDICTION_EXAMPLE,
     LOW_RISK_PREDICTION_EXAMPLE,
@@ -64,11 +67,12 @@ logger = logging.getLogger(__name__)
         },
     },
 )
-async def predict(patient: PatientData):
+async def predict(patient: PatientData, db: redis.Redis = Depends(get_redis)):
     """
     **Heart Disease Risk Prediction**
 
     Submit patient clinical data and receive a prediction on heart disease risk.
+    All predictions are automatically saved to Redis for audit and monitoring.
 
     ### Input Features
     The model requires 13 clinical features:
@@ -88,6 +92,7 @@ async def predict(patient: PatientData):
     - Trained on UCI Heart Disease dataset
     - Uses ensemble methods (Random Forest/Logistic Regression)
     - Features are automatically scaled using saved scaler
+    - All predictions are logged to Redis with persistence enabled
     """
     model = get_model()
     scaler = get_scaler()
@@ -154,6 +159,23 @@ async def predict(patient: PatientData):
             f"Risk: {risk_score:.2f}, Inference: {inference_duration*1000:.2f}ms, "
             f"Preprocess: {preprocess_duration*1000:.2f}ms"
         )
+
+        # Save prediction to Redis
+        try:
+            prediction_record = PredictionRecord(
+                patient_data=patient.dict(),
+                prediction=int(prediction),
+                prediction_label=prediction_label,
+                confidence=confidence,
+                risk_score=risk_score,
+                inference_time_ms=inference_duration * 1000,
+                preprocessing_time_ms=preprocess_duration * 1000,
+            )
+            record_id = prediction_record.save(db)
+            logger.info(f"Prediction saved to Redis with ID: {record_id}")
+        except Exception as db_error:
+            logger.warning(f"Failed to save prediction to Redis: {db_error}")
+            # Don't fail the request if database save fails - prediction still succeeds
 
         return PredictionResponse(
             prediction=int(prediction),

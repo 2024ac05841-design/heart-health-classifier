@@ -29,15 +29,24 @@ heart-disease-mlops/
 │
 ├── 📁 api/                               # API Implementation
 │   ├── 📄 __init__.py
-│   └── 📄 app.py                         # FastAPI application
-│       ├── Root endpoint (/)
-│       ├── Health check (/health)
-│       ├── Prediction endpoint (/predict)
-│       ├── Model info (/model/info)
-│       └── Metrics (/metrics)
+│   ├── 📄 app.py                         # FastAPI application with Redis integration
+│   ├── 📄 database.py                    # Redis connection management
+│   ├── 📄 db_models.py                   # Redis data models for predictions
+│   ├── 📄 models.py                      # Pydantic request/response models
+│   ├── 📄 dependencies.py                # Dependency injection
+│   ├── 📄 constants.py                   # Application constants
+│   ├── 📄 monitoring.py                  # Prometheus metrics
+│   └── 📁 routers/                       # API route handlers
+│       ├── 📄 __init__.py
+│       ├── 📄 health.py                  # Health check endpoint
+│       ├── 📄 predict.py                 # Prediction endpoint with Redis storage
+│       ├── 📄 model_info.py              # Model information endpoint
+│       ├── 📄 test_data.py               # Test data generation
+│       └── 📄 history.py                 # Prediction history & statistics (NEW)
 │
 ├── 📁 data/                              # Data Management
 │   ├── 📄 README.md                      # Data instructions
+│   ├── 📄 DATABASE.md                    # Database integration guide (NEW)
 │   ├── 📄 download_data.py               # Dataset download script
 │   ├── 📄 create_sample_data.py          # Sample data generator
 │   ├── 📁 raw/                           # Raw data storage
@@ -45,10 +54,18 @@ heart-disease-mlops/
 │   └── 📁 processed/                     # Processed data (created at runtime)
 │
 ├── 📁 k8s/                               # Kubernetes Configuration
-│   ├── 📄 deployment.yaml                # Deployment manifest
+│   ├── 📄 deployment.yaml                # API deployment with Redis env vars
 │   │   ├── 2 replicas
 │   │   ├── Health probes
-│   │   └── Resource limits
+│   │   ├── Resource limits
+│   │   └── Redis connection config
+│   ├── 📄 redis.yaml                     # Redis deployment & services (NEW)
+│   │   ├── StatefulSet with persistence
+│   │   ├── ConfigMap for Redis config
+│   │   ├── PersistentVolumeClaim (2GB)
+│   │   └── Services (ClusterIP + NodePort)
+│   ├── 📄 redis-exporter.yaml            # Redis metrics exporter (NEW)
+│   ├── 📄 grafana-dashboard-redis.json   # Grafana dashboard config (NEW)
 │   ├── 📄 configmap.yaml                 # Configuration map
 │   └── Service (LoadBalancer)
 │
@@ -59,12 +76,13 @@ heart-disease-mlops/
 │   └── 📄 metrics.json                   # Model performance metrics
 │
 ├── 📁 monitoring/                        # Monitoring Configuration
-│   ├── 📄 prometheus.yml                 # Prometheus config
+│   ├── 📄 prometheus.yml                 # Prometheus config (API + Redis metrics)
 │   └── 📁 grafana-dashboards/            # Grafana dashboards
 │
 ├── 📁 scripts/                           # Training and utility scripts
 │   ├── 📄 train_model.py                 # Main training script
 │   ├── 📄 test_api.py                    # API testing script
+│   ├── 📄 test_database.py               # Redis integration tests (NEW)
 │   ├── 📄 docker_commands.sh             # Docker helper commands
 │   └── 📄 k8s_commands.sh                # Kubernetes helper commands
 │
@@ -136,11 +154,21 @@ heart-disease-mlops/
 
 ### 📁 API Layer (`api/`)
 FastAPI application serving the ML model:
-- RESTful endpoints
-- JSON input/output
-- Automatic documentation (Swagger UI)
-- Prometheus metrics integration
-- Health checks
+- **Modular router architecture** for clean code organization
+- **RESTful endpoints** with automatic OpenAPI documentation
+- **Redis integration** for prediction storage and history
+- **Pydantic models** for request/response validation
+- **Prometheus metrics** for monitoring
+- **Health checks** with liveness/readiness probes
+
+**Key Components:**
+- `app.py` - Main FastAPI application with startup/shutdown events
+- `database.py` - Redis connection pool management
+- `db_models.py` - PredictionRecord model with Redis operations
+- `routers/` - Separated route handlers:
+  - `predict.py` - Prediction endpoint with automatic Redis storage
+  - `history.py` - Query prediction history and statistics
+  - `health.py`, `model_info.py`, `test_data.py` - Supporting endpoints
 
 ### 📁 Data Layer (`data/`)
 Data management and preprocessing:
@@ -148,6 +176,22 @@ Data management and preprocessing:
 - Raw data storage
 - Data cleaning and transformation
 - Sample data generation
+- **Database integration documentation** (DATABASE.md)
+
+### 📁 Database Layer (Redis)
+Prediction storage and retrieval:
+- **In-memory database** with AOF and RDB persistence
+- **Request history** with timestamp-based indexing
+- **Statistics aggregation** (counts, averages, distributions)
+- **Filtering capabilities** (by class, risk score, time range)
+- **Grafana visualization** via Redis Exporter metrics
+
+**Key Structure:**
+- `request:{id}` - Hash containing full prediction record
+- `request:id:counter` - Auto-incrementing ID
+- `request:by_timestamp` - Sorted set for chronological queries
+- `request:by_risk_score` - Sorted set for risk-based queries
+- `request:class:{0|1}` - Sets grouped by prediction outcome
 
 ### 📁 ML Core (`src/`)
 Machine learning logic:

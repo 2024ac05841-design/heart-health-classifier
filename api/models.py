@@ -134,3 +134,50 @@ class HealthResponse(BaseModel):
         ..., description="Whether ML model is loaded", example=True
     )
     version: str = Field(..., description="API version", example="1.0.0")
+
+
+class PredictionRecordDetail(BaseModel):
+    """Detailed prediction record for history queries"""
+
+    id: int = Field(..., description="Unique prediction ID", example=1)
+    timestamp: str = Field(
+        ..., description="ISO format timestamp", example="2026-07-11T10:30:00.123456"
+    )
+    patient_data: dict = Field(..., description="Input patient features")
+    prediction: int = Field(..., description="Prediction class (0 or 1)", example=1)
+    prediction_label: str = Field(
+        ..., description="Human-readable prediction", example="Disease Present"
+    )
+    confidence: float = Field(..., description="Model confidence", example=0.85)
+    risk_score: float = Field(..., description="Risk probability", example=0.85)
+    inference_time_ms: float = Field(
+        None, description="Inference time in milliseconds", example=12.5
+    )
+    preprocessing_time_ms: float = Field(
+        None, description="Preprocessing time in milliseconds", example=3.2
+    )
+
+    class Config:
+        from_attributes = True  # Allows creation from ORM objects
+
+
+class PredictionHistoryResponse(BaseModel):
+    """Statistics summary for prediction history"""
+
+    total_predictions: int = Field(
+        ..., description="Total number of predictions", example=1000
+    )
+    disease_count: int = Field(
+        ..., description="Number of disease predictions", example=450
+    )
+    no_disease_count: int = Field(
+        ..., description="Number of no disease predictions", example=550
+    )
+    avg_risk_score: float = Field(..., description="Average risk score", example=0.52)
+    avg_confidence: float = Field(..., description="Average confidence", example=0.78)
+    avg_inference_time_ms: float = Field(
+        ..., description="Average inference time", example=15.3
+    )
+    avg_preprocessing_time_ms: float = Field(
+        ..., description="Average preprocessing time", example=4.1
+    )

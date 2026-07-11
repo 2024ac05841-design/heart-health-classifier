@@ -1,0 +1,175 @@
+---
+# Redis PersistentVolumeClaim for data persistence
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi  # 2GB storage for prediction data
+  # storageClassName: standard  # Uncomment for cloud providers
+
+---
+# Redis ConfigMap for persistence configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: default
+data:
+  redis.conf: |
+    # Redis persistence configuration
+    
+    # AOF (Append Only File) - most durable option
+    appendonly yes
+    appendfilename "predictions.aof"
+    # Sync every second (good balance)
+    appendfsync everysec
+    
+    # RDB (Snapshot) - periodic backups
+    # Save if 1 key changed in 15 minutes
+    save 900 1
+    # Save if 10 keys changed in 5 minutes
+    save 300 10
+    # Save if 10000 keys changed in 1 minute
+    save 60 10000
+    
+    # Memory management
+    maxmemory 512mb
+    # Evict least recently used keys
+    maxmemory-policy allkeys-lru
+    
+    # Performance
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    
+    # Logging
+    loglevel notice
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: default
+  labels:
+    app: redis
+    component: database
+spec:
+  replicas: 1  # Single instance
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate  # Ensure only one instance accesses PVC
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: database
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine  # Lightweight Redis 7
+        ports:
+        - containerPort: 6379
+          name: redis
+          protocol: TCP
+        
+        # Start with custom config
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
+        
+        # Resource limits (very lightweight!)
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        
+        # Volume mounts
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data  # Redis data directory
+        - name: redis-config
+          mountPath: /etc/redis
+          readOnly: true
+        
+        # Health checks
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
+      - name: redis-config
+        configMap:
+          name: redis-config
+
+---
+# Redis Service (ClusterIP for internal access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: default
+  labels:
+    app: redis
+    component: database
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+
+---
+# Redis Service (NodePort for external access - development only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-external
+  namespace: default
+  labels:
+    app: redis
+    component: database
+spec:
+  type: NodePort
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+    nodePort: 30379  # Access Redis at localhost:30379
+    protocol: TCP
+    name: redis
