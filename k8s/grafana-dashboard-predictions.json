@@ -80,7 +80,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/stats",
+          "url": "http://heart-disease-api-service/predictions/stats",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -155,7 +155,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/stats",
+          "url": "http://heart-disease-api-service/predictions/stats",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -230,7 +230,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/stats",
+          "url": "http://heart-disease-api-service/predictions/stats",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -313,7 +313,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/stats",
+          "url": "http://heart-disease-api-service/predictions/stats",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -396,7 +396,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/stats",
+          "url": "http://heart-disease-api-service/predictions/stats",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -799,7 +799,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/history?limit=50",
+          "url": "http://heart-disease-api-service/predictions/history?limit=50",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -915,7 +915,7 @@
           "root_selector": "",
           "source": "url",
           "type": "json",
-          "url": "http://heart-disease-api-service/api/predictions/history?limit=100",
+          "url": "http://heart-disease-api-service/predictions/history?limit=100",
           "url_options": {
             "data": "",
             "method": "GET"
@@ -1066,3 +1066,4 @@
   "version": 1,
   "weekStart": ""
 }
+
