@@ -19,9 +19,11 @@
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Testing](#testing)
 - [Contributors](#contributors)
+- [Video Demo](#videolink)
 
 ---
 
+<a id="project-overview"></a>
 ## 🎯 Project Overview
 
 This project implements an **end-to-end Machine Learning Operations (MLOps)** solution for predicting heart disease risk based on patient health data. The solution demonstrates modern MLOps best practices including:
@@ -41,6 +43,7 @@ This project implements an **end-to-end Machine Learning Operations (MLOps)** so
 
 ---
 
+<a id="architecture"></a>
 ## 🏗️ Architecture
 
 ### High-Level System Architecture
@@ -246,6 +249,7 @@ graph TB
 
 ---
 
+<a id="features"></a>
 ## ✨ Features
 
 ### 1. **Data Acquisition & EDA**
@@ -308,6 +312,7 @@ graph TB
 
 ---
 
+<a id="technology-stack"></a>
 ## 🛠️ Technology Stack
 
 | Category | Tools |
@@ -328,6 +333,7 @@ graph TB
 
 ---
 
+<a id="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -434,6 +440,7 @@ heart-disease-mlops/
 
 ---
 
+<a id="setup-instructions"></a>
 ## 🚀 Setup Instructions
 
 ### Prerequisites
@@ -487,6 +494,7 @@ pytest tests/ -v
 
 ---
 
+<a id="usage-guide"></a>
 ## 📊 Usage Guide
 
 ### 1. Train Models
@@ -549,6 +557,7 @@ curl -X POST "http://localhost:8000/predict" \
 
 ---
 
+<a id="model-development"></a>
 ## 🧪 Model Development
 
 ### Data Preprocessing
@@ -588,6 +597,7 @@ curl -X POST "http://localhost:8000/predict" \
 
 ---
 
+<a id="api-documentation"></a>
 ## 📡 API Documentation
 
 ### Endpoints
@@ -737,6 +747,7 @@ Prometheus metrics endpoint for monitoring.
 
 ---
 
+<a id="deployment"></a>
 ## 🐳 Deployment
 
 ### Docker Deployment
@@ -877,6 +888,7 @@ kubectl delete -f k8s/deployment-cloud.yaml
 
 ---
 
+<a id="monitoring"></a>
 ## 📈 Monitoring
 
 ### Prometheus Metrics
@@ -911,6 +923,7 @@ Log format includes:
 
 ---
 
+<a id="cicd-pipeline"></a>
 ## 🔄 CI/CD Pipeline
 
 ### GitHub Actions Workflow
@@ -969,6 +982,7 @@ docker pull ghcr.io/2024ac05841-design/heart-health-classifier:latest
 
 ---
 
+<a id="testing"></a>
 ## 🧪 Testing
 
 ### Run All Tests
@@ -999,9 +1013,17 @@ View coverage report: `htmlcov/index.html`
 
 ---
 
+<a id="contributors"></a>
 ## 📝 Contributors
 
-- **Your Name** - Initial work
+- **K NANDHA** - Initial work
+
+---
+
+<a id="videolink"></a>
+## 🎥 Video Demo
+
+**Link:** [Watch on OneDrive](https://1drv.ms/v/c/c4c8345588741dcb/IQB2v2aCNEdGTb0qQxYww9vWAZfCCwa7l-ia_9kubSijmWg)
 
 ---
 
@@ -1019,13 +1041,6 @@ This project is licensed under the MIT License.
 
 ---
 
-## 📞 Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Contact: your.email@example.com
-
----
 
 ## 🎓 Assignment Details
 
