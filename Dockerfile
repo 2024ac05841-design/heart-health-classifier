@@ -43,6 +43,13 @@ COPY --from=base /usr/local/bin /usr/local/bin
 
 # Copy only runtime-necessary files
 COPY api/ ./api/
+# Copy all trained models:
+# - logistic_regression.pkl (Logistic Regression model)
+# - random_forest.pkl (Random Forest model)
+# - best_model.pkl (Best performing model)
+# - scaler.pkl (Feature scaler)
+# - feature_names.json (Feature metadata)
+# - metrics.json (Model metrics for all models)
 COPY models/ ./models/
 
 # Create necessary directories

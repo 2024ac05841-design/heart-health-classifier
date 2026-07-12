@@ -1,0 +1,164 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-data-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path  # Rancher Desktop default storage class
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mlflow-init-script
+  namespace: default
+data:
+  init-mlflow.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "Initializing MLflow tracking directory..."
+    
+    # Create mlruns directory structure if it doesn't exist
+    mkdir -p /mlflow/mlruns/1/models
+    
+    # Create a meta.yaml file for experiment 1 if it doesn't exist
+    if [ ! -f /mlflow/mlruns/1/meta.yaml ]; then
+      cat > /mlflow/mlruns/1/meta.yaml <<EOF
+    artifact_location: file:///mlflow/mlruns/1
+    creation_time: $(date +%s)000
+    experiment_id: '1'
+    last_update_time: $(date +%s)000
+    lifecycle_stage: active
+    name: heart_disease_prediction
+    EOF
+      echo "Created experiment meta.yaml"
+    fi
+    
+    echo "MLflow directory initialized"
+    ls -la /mlflow/mlruns/
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: default
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      initContainers:
+      - name: init-mlflow
+        image: busybox:1.35
+        command: ['sh', '/scripts/init-mlflow.sh']
+        volumeMounts:
+        - name: mlflow-data
+          mountPath: /mlflow
+        - name: init-script
+          mountPath: /scripts
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:v2.7.1
+        command:
+          - mlflow
+          - server
+          - --backend-store-uri
+          - file:///mlflow/mlruns
+          - --default-artifact-root
+          - file:///mlflow/mlruns
+          - --host
+          - 0.0.0.0
+          - --port
+          - "5000"
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: "file:///mlflow/mlruns"
+        volumeMounts:
+        - name: mlflow-data
+          mountPath: /mlflow
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "200m"
+          limits:
+            memory: "3Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+      volumes:
+      - name: mlflow-data
+        persistentVolumeClaim:
+          claimName: mlflow-data-pvc
+      - name: init-script
+        configMap:
+          name: mlflow-init-script
+          defaultMode: 0755
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-service
+  namespace: default
+  labels:
+    app: mlflow
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30050  # External access at localhost:30050
+    protocol: TCP
+    name: http
+  selector:
+    app: mlflow
+
+---
+# Optional: Headless service for internal access
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: default
+  labels:
+    app: mlflow
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    app: mlflow
