@@ -1,6 +1,6 @@
 # 🫀 Heart Disease Prediction MLOps Project
 
-[![CI/CD Pipeline](https://github.com/yourusername/heart-disease-mlops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/yourusername/heart-disease-mlops/actions)
+[![CI/CD Pipeline](https://github.com/2024ac05841-design/heart-disease-mlops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/2024ac05841-design/heart-disease-mlops/actions)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -409,7 +409,7 @@ heart-disease-mlops/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/heart-disease-mlops.git
+git clone https://github.com/2024ac05841-design/heart-disease-mlops.git
 cd heart-disease-mlops
 ```
 

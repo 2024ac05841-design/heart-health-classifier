@@ -133,8 +133,8 @@ Predict the presence or absence of heart disease based on patient clinical data.
 ## Contact
 
 For questions about this model:
-- Repository: https://github.com/yourusername/heart-disease-mlops
-- Issues: https://github.com/yourusername/heart-disease-mlops/issues
+- Repository: https://github.com/2024ac05841-design/heart-disease-mlops
+- Issues: https://github.com/2024ac05841-design/heart-disease-mlops/issues
 
 ## Changelog
 
