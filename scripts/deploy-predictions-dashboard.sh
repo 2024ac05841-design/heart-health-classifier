@@ -18,7 +18,7 @@ fi
 # Create or update the ConfigMap for the predictions dashboard
 echo "📦 Creating ConfigMap for predictions dashboard..."
 kubectl create configmap grafana-predictions-dashboard \
-    --from-file=grafana-predictions-dashboard.json=k8s/monitoring/grafana-dashboard-predictions.json \
+    --from-file=grafana-predictions-dashboard.json=monitoring/grafana-dashboard-predictions.json \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # Update Grafana deployment to mount the new dashboard

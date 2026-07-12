@@ -325,8 +325,6 @@ heart-disease-mlops/
 │   ├── deployment.yaml            # Generic deployment (backward compatibility)
 │   ├── redis.yaml                 # Redis deployment with persistence (NEW)
 │   ├── redis-exporter.yaml        # Redis metrics exporter (NEW)
-│   ├── monitoring/                # Monitoring dashboards (NEW)
-│   │   └── grafana-dashboard-predictions.json # Predictions dashboard
 │   ├── configmap.yaml             # Configuration
 │   └── README.md                  # Kubernetes deployment guide
 ├── models/
@@ -335,7 +333,14 @@ heart-disease-mlops/
 │   ├── best_model.pkl             # Trained model (built in CI/CD, not in git)
 │   └── scaler.pkl                 # Feature scaler (built in CI/CD, not in git)
 ├── monitoring/
-│   └── prometheus.yml             # Prometheus configuration (API + Redis metrics)
+│   ├── prometheus.yml             # Prometheus configuration (API + Redis metrics)
+│   ├── alerts.yml                 # Alert rules
+│   ├── grafana-dashboard-predictions.json # Predictions history dashboard (NEW)
+│   ├── grafana-home-dashboard.json # Infrastructure overview dashboard
+│   ├── grafana-advanced-dashboard.json # Advanced metrics dashboard
+│   ├── grafana-logs-dashboard.json # Logs & filtering dashboard
+│   ├── grafana-dashboard.json     # ML monitoring dashboard
+│   └── README.md                  # Monitoring documentation
 ├── project-docs/
 │   ├── CHANGELOG.md               # Version history
 │   ├── COMPLETION_REPORT.md       # Assignment completion report

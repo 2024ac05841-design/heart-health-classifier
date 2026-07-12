@@ -41,7 +41,7 @@ Start-Sleep -Seconds 5
 
 # Import dashboard via API
 try {
-    $dashboardJson = Get-Content "k8s\monitoring\grafana-dashboard-predictions.json" -Raw | ConvertFrom-Json
+    $dashboardJson = Get-Content "monitoring\grafana-dashboard-predictions.json" -Raw | ConvertFrom-Json
     
     # Wrap in dashboard object for API
     $apiPayload = @{
@@ -78,7 +78,7 @@ try {
     Write-Host "  - Creating ConfigMap for predictions dashboard..." -ForegroundColor Gray
     
     kubectl create configmap grafana-predictions-dashboard `
-        --from-file=grafana-predictions-dashboard.json=k8s\monitoring\grafana-dashboard-predictions.json `
+        --from-file=grafana-predictions-dashboard.json=monitoring\grafana-dashboard-predictions.json `
         --dry-run=client -o yaml | kubectl apply -f -
     
     Write-Host "  - [SUCCESS] ConfigMap created!" -ForegroundColor Green

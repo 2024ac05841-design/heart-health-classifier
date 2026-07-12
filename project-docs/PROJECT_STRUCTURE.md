@@ -65,8 +65,7 @@ heart-disease-mlops/
 │   │   ├── PersistentVolumeClaim (2GB)
 │   │   └── Services (ClusterIP + NodePort)
 │   ├── 📄 redis-exporter.yaml            # Redis metrics exporter (NEW)
-│   ├── � monitoring/                    # Monitoring dashboards (NEW)
-│   │   └── 📄 grafana-dashboard-predictions.json  # Predictions dashboard
+
 │   ├── 📄 configmap.yaml                 # Configuration map
 │   └── Service (LoadBalancer)
 │
@@ -78,7 +77,13 @@ heart-disease-mlops/
 │
 ├── 📁 monitoring/                        # Monitoring Configuration
 │   ├── 📄 prometheus.yml                 # Prometheus config (API + Redis metrics)
-│   └── 📁 grafana-dashboards/            # Grafana dashboards
+│   ├── 📄 alerts.yml                     # Alert rules
+│   ├── 📄 grafana-dashboard-predictions.json  # Predictions history dashboard (NEW)
+│   ├── 📄 grafana-home-dashboard.json    # Infrastructure overview dashboard
+│   ├── 📄 grafana-advanced-dashboard.json # Advanced metrics dashboard
+│   ├── 📄 grafana-logs-dashboard.json    # Logs & filtering dashboard
+│   ├── 📄 grafana-dashboard.json         # ML monitoring dashboard
+│   └── 📄 README.md                      # Monitoring documentation
 │
 ├── 📁 scripts/                           # Training and utility scripts
 │   ├── 📄 train_model.py                 # Main training script
