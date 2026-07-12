@@ -112,8 +112,10 @@ def main():
     # Save individual models
     logger.info("\nSaving individual models...")
     joblib.dump(lr_model, os.path.join(args.output_dir, "logistic_regression.pkl"))
-    logger.info(f"  - Logistic Regression saved: {args.output_dir}/logistic_regression.pkl")
-    
+    logger.info(
+        f"  - Logistic Regression saved: {args.output_dir}/logistic_regression.pkl"
+    )
+
     joblib.dump(rf_model, os.path.join(args.output_dir, "random_forest.pkl"))
     logger.info(f"  - Random Forest saved: {args.output_dir}/random_forest.pkl")
 
@@ -144,13 +146,17 @@ def main():
         json.dump({"features": feature_names}, f)
 
     with open(os.path.join(args.output_dir, "metrics.json"), "w") as f:
-        json.dump({
-            "best_model": best_model_name,
-            "best_model_type": best_model_type,
-            "metrics": best_metrics,
-            "logistic_regression_metrics": lr_metrics,
-            "random_forest_metrics": rf_metrics
-        }, f, indent=4)
+        json.dump(
+            {
+                "best_model": best_model_name,
+                "best_model_type": best_model_type,
+                "metrics": best_metrics,
+                "logistic_regression_metrics": lr_metrics,
+                "random_forest_metrics": rf_metrics,
+            },
+            f,
+            indent=4,
+        )
 
     logger.info(f"\nAll model artifacts saved to {args.output_dir}/:")
     logger.info(f"  - logistic_regression.pkl")

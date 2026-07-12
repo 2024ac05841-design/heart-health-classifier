@@ -82,6 +82,10 @@ kubectl cp $tempArchive "default/${podName}:/tmp/mlruns_training.tar"
 Write-Host "  Extracting in pod..." -ForegroundColor Gray
 kubectl exec $podName -- sh -c "cd /mlflow; tar -xf /tmp/mlruns_training.tar; rm /tmp/mlruns_training.tar"
 
+# Move run folders to correct location
+Write-Host "  Fixing directory structure..." -ForegroundColor Gray
+kubectl exec $podName -- sh -c "mv /mlflow/mlruns_training/1/models/m-* /mlflow/mlruns/1/ 2>/dev/null || true; rm -rf /mlflow/mlruns_training"
+
 # Clean up
 Remove-Item $tempArchive -Force
 Write-Host "  OK Data uploaded!" -ForegroundColor Green
