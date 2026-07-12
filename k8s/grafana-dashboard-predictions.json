@@ -947,6 +947,7 @@
         "y": 24
       },
       "id": 9,
+      "description": "Note: Minimum 20 predictions required for histogram to display distribution properly. Currently shows data when sufficient predictions are available.",
       "options": {
         "barRadius": 0,
         "barWidth": 0.97,
