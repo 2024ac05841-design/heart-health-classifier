@@ -24,6 +24,11 @@ This directory contains Kubernetes manifests for deploying the Heart Disease Pre
 ### Configuration Files
 
 - **`configmap.yaml`** - Environment variables and application configuration
+- **`ingress.yaml`** - Standard Kubernetes Ingress resources for unified access via path-based routing
+- **`monitoring-local.yaml`** - Prometheus and Grafana deployment for local monitoring
+- **`mlflow.yaml`** - MLflow experiment tracking server deployment
+- **`redis.yaml`** - Redis cache for API responses
+- **`redis-exporter.yaml`** - Redis metrics exporter for Prometheus
 
 ## Quick Start
 
@@ -235,3 +240,35 @@ kubectl create secret docker-registry ghcr-secret \
 - LoadBalancer automatically provisions cloud load balancer
 - May incur additional costs for load balancer
 - External IP assigned automatically
+
+## Ingress Configuration
+
+For unified access via a single port with path-based routing (visible in Rancher Desktop UI):
+
+**Deploy Ingress:**
+```bash
+kubectl apply -f k8s/ingress.yaml
+```
+
+**Access Services via Ingress:**
+- **API**: http://localhost/api or http://192.168.127.2/api
+- **Grafana**: http://localhost/grafana or http://192.168.127.2/grafana
+- **MLflow**: http://localhost/mlflow or http://192.168.127.2/mlflow
+- **Prometheus**: http://localhost/prometheus or http://192.168.127.2/prometheus
+
+**View in Rancher Desktop:**
+- Navigate to Service Discovery → Ingresses in Rancher Desktop UI
+- All 4 ingress resources will be visible with ADDRESS: 192.168.127.2
+
+**Remove Ingress:**
+```bash
+kubectl delete -f k8s/ingress.yaml
+```
+
+### Direct NodePort Access (Always Available)
+
+NodePort access is recommended for local development and works independently of ingress:
+- **API**: http://localhost:30080
+- **Grafana**: http://localhost:30030
+- **MLflow**: http://localhost:30050
+- **Prometheus**: http://localhost:30090

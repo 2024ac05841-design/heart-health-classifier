@@ -6,7 +6,7 @@ metadata:
     app: heart-disease-api
     version: v1
 spec:
-  replicas: 2
+  replicas: 1  # Reduced from 2 to save memory (~340MB)
   selector:
     matchLabels:
       app: heart-disease-api
@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: api
-        image: heart-health-classifier:v1-redis
-        imagePullPolicy: Never
+        image: heart-health-classifier:latest
+        imagePullPolicy: Never  # Uses local image only
         ports:
         - containerPort: 8000
           name: http
