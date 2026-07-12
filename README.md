@@ -53,56 +53,94 @@ graph TB
     
     subgraph "CI/CD Pipeline - GitHub Actions"
         B --> C[Lint & Test]
-        C --> D[Download Dataset]
-        D --> E[Data Processing]
-        E --> F[Feature Engineering]
-        F --> G[Model Training]
-        G --> H[Model Evaluation]
-        H --> I[Model Artifacts]
-        I --> J[Build Docker Image]
-        J --> JS[Security Scan]
-        JS --> K[Push to GHCR]
+        C --> D[Data Processing]
+        D --> E[Model Training]
+        E --> F[MLflow Logging]
+        F --> G[Build Docker Image]
+        G --> H[Security Scan]
+        H --> I[Push to GHCR]
     end
     
     subgraph "Container Registry"
-        K --> L[ghcr.io/heart-health-classifier]
+        I --> J[ghcr.io/heart-health-classifier]
     end
     
-    subgraph "Deployment"
-        L --> M{Environment}
-        M -->|Local| N[Rancher Desktop/Minikube]
-        M -->|Cloud| O[AWS EKS/Azure AKS/GCP GKE]
-        N --> P[NodePort :30080]
-        O --> Q[LoadBalancer]
-    end
-    
-    subgraph "API Service"
-        P --> R[FastAPI Container]
-        Q --> R
-        R --> S[Trained Model + Scaler]
-        R --> RD[Redis Database]
-        RD --> RD1[Prediction Storage]
-        RD --> RD2[Request History]
+    subgraph "Kubernetes Cluster - 8 Pod MLOps Stack"
+        J --> K[Deployment]
+        
+        subgraph "Application Layer"
+            K --> L[Heart Disease API Pod]
+            L --> M[Trained Model + Scaler]
+            L --> N[Redis Service]
+        end
+        
+        subgraph "Data Layer"
+            N --> O[Redis StatefulSet]
+            O --> P[PVC: 1Gi Storage]
+            O --> Q[Prediction Cache]
+            O --> R[Request History]
+        end
+        
+        subgraph "Experiment Tracking"
+            S[MLflow Server Pod]
+            S --> T[PVC: 3Gi Artifacts]
+            S --> U[SQLite Backend]
+        end
+        
+        subgraph "Monitoring & Logging Stack"
+            V[Prometheus Pod]
+            W[Grafana Pod]
+            X[Loki Pod]
+            Y[Promtail Pod]
+            Z[Redis Exporter Pod]
+            
+            L --> V
+            O --> Z
+            Z --> V
+            V --> W
+            L --> Y
+            Y --> X
+            X --> W
+        end
+        
+        subgraph "Services"
+            AA[API Service: NodePort 30080]
+            AB[MLflow Service: NodePort 30050]
+            AC[Grafana Service: NodePort 30030]
+            AD[Prometheus Service: NodePort 30090]
+        end
+        
+        L --> AA
+        S --> AB
+        W --> AC
+        V --> AD
     end
     
     subgraph "End Users"
-        R --> T[REST API Endpoints]
-        T --> U[Predictions]
-        T --> UH[History Queries]
+        AE[REST API Clients] --> AA
+        AA --> L
+        AF[Data Scientists] --> AB
+        AG[DevOps/SRE] --> AC
+        AG --> AD
     end
     
-    subgraph "Monitoring"
-        R --> V[Prometheus Metrics]
-        RD --> RE[Redis Exporter]
-        RE --> V
-        V --> W[Grafana Dashboard]
+    subgraph "Monitoring Dashboards"
+        W --> AH[Infrastructure Overview]
+        W --> AI[ML Monitoring]
+        W --> AJ[Advanced Metrics]
+        W --> AK[Logs & Filtering]
+        W --> AL[Prediction History]
     end
     
     style A fill:#e1f5ff
-    style G fill:#ff9800
-    style L fill:#2196f3
-    style R fill:#4caf50
-    style V fill:#9c27b0
+    style E fill:#ff9800
+    style J fill:#2196f3
+    style L fill:#4caf50
+    style O fill:#ff6b6b
+    style S fill:#9c27b0
+    style V fill:#ffa726
+    style W fill:#ab47bc
+    style X fill:#66bb6a
 ```
 
 ### ML Pipeline Workflow

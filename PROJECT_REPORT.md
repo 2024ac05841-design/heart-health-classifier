@@ -205,34 +205,92 @@ graph TB
         B --> C[Lint & Test]
         C --> D[Data Processing]
         D --> E[Model Training]
-        E --> F[Build Docker Image]
-        F --> G[Security Scan]
-        G --> H[Push to GHCR]
+        E --> F[MLflow Logging]
+        F --> G[Build Docker Image]
+        G --> H[Security Scan]
+        H --> I[Push to GHCR]
     end
     
     subgraph "Container Registry"
-        H --> I[ghcr.io/heart-health-classifier]
+        I --> J[ghcr.io/heart-health-classifier]
     end
     
-    subgraph "Kubernetes Cluster"
-        I --> J[Deployment]
-        J --> K[API Pods]
-        J --> L[Redis Pod]
-        K --> M[NodePort Service]
-        L --> N[PVC Storage]
+    subgraph "Kubernetes Cluster - 8 Pod MLOps Stack"
+        J --> K[Deployment]
+        
+        subgraph "Application Layer"
+            K --> L[Heart Disease API Pod]
+            L --> M[Trained Model + Scaler]
+            L --> N[Redis Service]
+        end
+        
+        subgraph "Data Layer"
+            N --> O[Redis StatefulSet]
+            O --> P[PVC: 1Gi Storage]
+            O --> Q[Prediction Cache]
+            O --> R[Request History]
+        end
+        
+        subgraph "Experiment Tracking"
+            S[MLflow Server Pod]
+            S --> T[PVC: 3Gi Artifacts]
+            S --> U[SQLite Backend]
+        end
+        
+        subgraph "Monitoring & Logging Stack"
+            V[Prometheus Pod]
+            W[Grafana Pod]
+            X[Loki Pod]
+            Y[Promtail Pod]
+            Z[Redis Exporter Pod]
+            
+            L --> V
+            O --> Z
+            Z --> V
+            V --> W
+            L --> Y
+            Y --> X
+            X --> W
+        end
+        
+        subgraph "Services"
+            AA[API Service: NodePort 30080]
+            AB[MLflow Service: NodePort 30050]
+            AC[Grafana Service: NodePort 30030]
+            AD[Prometheus Service: NodePort 30090]
+        end
+        
+        L --> AA
+        S --> AB
+        W --> AC
+        V --> AD
     end
     
-    subgraph "Monitoring Stack"
-        K --> O[Prometheus]
-        L --> P[Redis Exporter]
-        P --> O
-        O --> Q[Grafana]
+    subgraph "End Users"
+        AE[REST API Clients] --> AA
+        AA --> L
+        AF[Data Scientists] --> AB
+        AG[DevOps/SRE] --> AC
+        AG --> AD
     end
     
-    subgraph "Users"
-        R[REST API Clients] --> M
-        M --> K
+    subgraph "Monitoring Dashboards"
+        W --> AH[Infrastructure Overview]
+        W --> AI[ML Monitoring]
+        W --> AJ[Advanced Metrics]
+        W --> AK[Logs & Filtering]
+        W --> AL[Prediction History]
     end
+    
+    style A fill:#e1f5ff
+    style E fill:#ff9800
+    style J fill:#2196f3
+    style L fill:#4caf50
+    style O fill:#ff6b6b
+    style S fill:#9c27b0
+    style V fill:#ffa726
+    style W fill:#ab47bc
+    style X fill:#66bb6a
 ```
 
 ### 4.2 ML Pipeline Workflow
