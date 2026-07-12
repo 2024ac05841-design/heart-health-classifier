@@ -325,7 +325,8 @@ heart-disease-mlops/
 │   ├── deployment.yaml            # Generic deployment (backward compatibility)
 │   ├── redis.yaml                 # Redis deployment with persistence (NEW)
 │   ├── redis-exporter.yaml        # Redis metrics exporter (NEW)
-│   ├── grafana-dashboard-redis.json # Redis Grafana dashboard (NEW)
+│   ├── monitoring/                # Monitoring dashboards (NEW)
+│   │   └── grafana-dashboard-predictions.json # Predictions dashboard
 │   ├── configmap.yaml             # Configuration
 │   └── README.md                  # Kubernetes deployment guide
 ├── models/

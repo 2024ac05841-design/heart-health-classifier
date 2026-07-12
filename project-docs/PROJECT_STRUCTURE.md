@@ -65,7 +65,8 @@ heart-disease-mlops/
 │   │   ├── PersistentVolumeClaim (2GB)
 │   │   └── Services (ClusterIP + NodePort)
 │   ├── 📄 redis-exporter.yaml            # Redis metrics exporter (NEW)
-│   ├── 📄 grafana-dashboard-redis.json   # Grafana dashboard config (NEW)
+│   ├── � monitoring/                    # Monitoring dashboards (NEW)
+│   │   └── 📄 grafana-dashboard-predictions.json  # Predictions dashboard
 │   ├── 📄 configmap.yaml                 # Configuration map
 │   └── Service (LoadBalancer)
 │

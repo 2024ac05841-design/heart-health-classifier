@@ -4357,7 +4357,7 @@ data:
   grafana-predictions-dashboard.json: |
     # Prediction History Dashboard JSON
     # This dashboard will be loaded from the separate file during deployment
-    # To apply: kubectl create configmap grafana-predictions-dashboard --from-file=k8s/grafana-dashboard-predictions.json
+    # To apply: kubectl create configmap grafana-predictions-dashboard --from-file=k8s/monitoring/grafana-dashboard-predictions.json
     # Alternatively, the JSON content should be embedded here for auto-provisioning
     {}
     
