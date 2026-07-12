@@ -349,8 +349,7 @@ heart-disease-mlops/
 │   ├── DATABASE_IMPLEMENTATION.md # Redis implementation details (NEW)
 │   ├── MODEL_CARD.md              # Model documentation
 │   ├── PROJECT_STRUCTURE.md       # Detailed structure
-│   ├── PROJECT_SUMMARY.md         # Project summary
-│   └── verify_setup.py            # Setup verification script
+│   └── PROJECT_SUMMARY.md         # Project summary
 ├── scripts/
 │   ├── train_model.py             # Main training script
 │   ├── test_api.py                # API testing script

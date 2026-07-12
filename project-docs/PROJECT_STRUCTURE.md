@@ -89,7 +89,6 @@ heart-disease-mlops/
 │   ├── 📄 DATABASE.md                    # Database integration guide
 │   ├── 📄 DATABASE_COMPARISON.md         # Database comparison (NEW)
 │   ├── 📄 DATABASE_IMPLEMENTATION.md     # Database implementation details (NEW)
-│   ├── 📄 verify_setup.py                # Setup verification script
 │   ├── 📄 MLOps Assignment 01 2026.pdf   # Assignment requirements (NEW)
 │   └── 📄 A01 FAQs.pdf                   # Assignment FAQs (NEW)
 │
@@ -249,7 +248,6 @@ Comprehensive project documentation:
 - **DATABASE_IMPLEMENTATION.md** - Implementation details
 - **CHANGELOG.md** - Version history and updates
 - **CONTRIBUTING.md** - Contribution guidelines
-- **verify_setup.py** - Automated setup verification
 - **Assignment PDFs** - Course materials and FAQs
 
 ### 📁 Screenshots (`screenshots/`)
@@ -414,18 +412,3 @@ data/ → src/ → MLflow → models/
 ```
 Dockerfile → docker-compose.yml → k8s/ → Production
 ```
-
-## Next Steps
-
-1. **Explore:** Start with README.md for comprehensive overview
-2. **Setup:** Follow QUICKSTART.md for rapid deployment
-3. **Verify:** Run `python project-docs/verify_setup.py` to check environment
-4. **Train:** Execute `python scripts/train_model.py` for model training
-5. **Deploy:** Use Docker or Kubernetes deployment scripts
-6. **Review Report:** Read PROJECT_REPORT.md for complete project documentation
-7. **Monitor:** Access Grafana dashboards at http://localhost:30030
-
----
-
-
-
