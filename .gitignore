@@ -20,6 +20,7 @@ wheels/
 .installed.cfg
 *.egg
 *.bak
+*.coverage.*
 
 # Virtual environments
 venv/
@@ -33,6 +34,7 @@ ENV/
 
 # MLflow
 mlruns_training/
+mlruns/
 mlartifacts/
 mlflow.db
 *.db
