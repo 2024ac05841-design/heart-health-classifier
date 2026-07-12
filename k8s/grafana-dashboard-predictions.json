@@ -808,27 +808,92 @@
           "columns": [
             {
               "selector": "id",
-              "text": "id",
+              "text": "ID",
               "type": "string"
             },
             {
               "selector": "timestamp",
-              "text": "timestamp",
+              "text": "Timestamp",
               "type": "timestamp"
             },
             {
               "selector": "prediction_label",
-              "text": "prediction_label",
+              "text": "Prediction",
               "type": "string"
             },
             {
               "selector": "risk_score",
-              "text": "risk_score",
+              "text": "Risk Score",
               "type": "number"
             },
             {
               "selector": "confidence",
-              "text": "confidence",
+              "text": "Confidence",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.age",
+              "text": "Age",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.sex",
+              "text": "Sex",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.cp",
+              "text": "Chest Pain",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.trestbps",
+              "text": "BP",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.chol",
+              "text": "Cholesterol",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.fbs",
+              "text": "FBS",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.restecg",
+              "text": "Rest ECG",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.thalach",
+              "text": "Max HR",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.exang",
+              "text": "Ex Angina",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.oldpeak",
+              "text": "Oldpeak",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.slope",
+              "text": "Slope",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.ca",
+              "text": "CA",
+              "type": "number"
+            },
+            {
+              "selector": "patient_data.thal",
+              "text": "Thal",
               "type": "number"
             }
           ]
