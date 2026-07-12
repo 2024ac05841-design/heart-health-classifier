@@ -242,8 +242,18 @@ start htmlcov/index.html
 python scripts/test_database.py
 ```
 
-**Test Coverage:** 61% (src + api modules)  
-**Test Suites:** 21 passing tests across 3 test files
+**Test Coverage:** 89.59% (711 statements, 74 missed)  
+**Test Suites:** 79 passing tests across 7 test files
+
+**Coverage Highlights:**
+- `src/feature_engineering.py`: 100%
+- `src/model_training.py`: 100%
+- `src/utils.py`: 97.56%
+- `api/db_models.py`: 95.60%
+- `api/app.py`: 91.18%
+- `api/dependencies.py`: 88.33%
+- `api/routers/predict.py`: 85.71%
+- `src/data_processing.py`: 84.51%
 
 ---
 
@@ -409,7 +419,7 @@ A **production-ready MLOps system** with enterprise-grade capabilities:
 ### ⚙️ Infrastructure
 - **Containerization:** Docker with multi-stage builds and optimized images
 - **Orchestration:** Kubernetes with StatefulSets, PersistentVolumes, NodePort services
-- **Testing:** Unit tests with 61% coverage  
+- **Testing:** Unit tests with 89.59% coverage (79 passing tests)
 - **CI/CD Ready:** Infrastructure-as-code with declarative YAML manifests
 
 ---
