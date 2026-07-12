@@ -486,19 +486,51 @@ MLflow enables easy comparison of runs:
 ✅ **Reproducibility:** Exact versions pinned in requirements.txt  
 ✅ **Artifact Management:** Models and coverage reports uploaded  
 
-**Screenshot Placeholder:**
-```
-📸 CI/CD Screenshots Location:
-Place screenshots in: /screenshots/cicd/
+#### 📸 CI/CD Pipeline Screenshots
 
-Required screenshots:
-1. github_actions_workflow.png - Workflow run overview
-2. github_actions_tests.png - Test execution results (79 passed)
-3. github_actions_coverage.png - Coverage report (89.59%)
-4. github_actions_docker_build.png - Docker build stage
-5. github_actions_security_scan.png - Trivy security scan results
-6. codecov_dashboard.png - Codecov coverage dashboard
-```
+**1. GitHub Actions Workflow Overview**
+
+![GitHub Actions Workflow](screenshots/cicd/github_actions_workflow.png)
+*Figure 6.1: GitHub Actions workflow runs showing CI/CD pipeline executions with status indicators*
+
+---
+
+**2. Unit Tests Execution**
+
+![GitHub Actions Tests](screenshots/cicd/github_actions_tests.png)
+*Figure 6.2: Test execution results - 79 tests passed with 81.29% coverage (711 statements, 133 missed)*
+
+---
+
+**3. Coverage Report Upload**
+
+![GitHub Actions Coverage](screenshots/cicd/github_actions_coverage.png)
+*Figure 6.3: Coverage report upload to Codecov with integrity verification*
+
+---
+
+**4. Docker Image Build**
+
+![GitHub Actions Docker Build](screenshots/cicd/github_actions_docker_build.png)
+*Figure 6.4: Docker build process - multi-stage build with image testing and health checks*
+
+---
+
+**5. Security Scan (Trivy)**
+
+![GitHub Actions Security Scan](screenshots/cicd/github_actions_security_scan.png)
+*Figure 6.5: Trivy vulnerability scanner detecting dependencies and running security checks*
+
+---
+
+**6. Codecov Dashboard**
+
+![Codecov Dashboard](screenshots/cicd/codecov_dashboard.png)
+*Figure 6.6: Codecov coverage dashboard showing 81.29% overall coverage (api: 71.12%, src: 95.87%)*
+
+---
+
+### 6.6 CI/CD Pipeline Insights
 
 ---
 
@@ -629,22 +661,121 @@ kubectl get svc
 curl http://localhost:30080/health
 ```
 
-**Screenshot Placeholder:**
-```
-📸 Kubernetes Deployment Screenshots Location:
-Place screenshots in: /screenshots/kubernetes/
+#### 📸 Kubernetes Deployment Screenshots
 
-Required screenshots:
-1. kubectl_get_pods.png - All 8 pods running
-2. kubectl_get_services.png - Service configurations
-3. kubectl_describe_pod.png - Detailed pod information
-4. kubernetes_dashboard.png - K8s dashboard overview (if available)
-5. api_swagger_ui.png - FastAPI Swagger documentation
-6. api_health_check.png - Health endpoint response
-7. grafana_dashboard.png - Grafana monitoring dashboard
-8. prometheus_targets.png - Prometheus scrape targets
-9. redis_cache_metrics.png - Redis cache performance metrics
-```
+**1. Kubernetes Pods Overview (Rancher Dashboard)**
+
+![Kubectl Get Pods](screenshots/kubernetes/kubectl_get_pods.png)
+*Figure 7.1: Rancher Desktop showing all 8 pods running - Heart Disease API, Redis, MLflow, Prometheus, Grafana, Loki, Promtail, Redis Exporter*
+
+---
+
+**2. Kubernetes Services Configuration**
+
+![Kubectl Get Services](screenshots/kubernetes/kubectl_get_services.png)
+*Figure 7.2: Service Discovery view showing all active services with NodePort and ClusterIP configurations*
+
+---
+
+**3. Pod Detailed Information**
+
+![Kubectl Describe Pod](screenshots/kubernetes/kubectl_describe_pod.png)
+*Figure 7.3: Detailed pod specification showing image, environment variables, and resource configurations*
+
+---
+
+**4. FastAPI Swagger UI**
+
+![API Swagger UI](screenshots/kubernetes/api_swagger_ui.png)
+*Figure 7.4: Interactive API documentation via Swagger UI at http://localhost:30080/docs*
+
+---
+
+**5. API Health Check Response**
+
+![API Health Check](screenshots/kubernetes/api_health_check.png)
+*Figure 7.5: Health endpoint returning status with model_loaded and redis_connected indicators*
+
+---
+
+**6. Prediction API Response (Example 1)**
+
+![API Prediction Response 1](screenshots/kubernetes/api_prediction_response_1.png)
+*Figure 7.6: Prediction response showing prediction=1 (Disease), probability=0.98, and risk_level classification*
+
+---
+
+**7. Prediction API Response (Example 2)**
+
+![API Prediction Response 2](screenshots/kubernetes/api_prediction_response_2.png)
+*Figure 7.7: Another prediction example demonstrating consistent API response format with confidence scores*
+
+---
+
+**8. Grafana Dashboards Home**
+
+![Grafana Home](screenshots/kubernetes/grafana_home.png)
+*Figure 7.8: Grafana dashboards list - Infrastructure Overview, ML Monitoring, Logs & Filtering, Prediction History, Advanced Metrics*
+
+---
+
+**9. Infrastructure Overview Dashboard**
+
+![Grafana Dashboard - Infrastructure](screenshots/kubernetes/grafana_dashboard_1.png)
+*Figure 7.9: System health dashboard showing pod status, memory usage (1.14 GB total), CPU usage, and request rates*
+
+---
+
+**10. Heart Disease Prediction History Dashboard**
+
+![Grafana Dashboard - Prediction History](screenshots/kubernetes/grafana_dashboard_2.png)
+*Figure 7.10: Prediction monitoring - 10 total predictions, request rate, recent predictions table with patient data*
+
+---
+
+**11. ML Monitoring Dashboard**
+
+![Grafana Dashboard - ML Monitoring](screenshots/kubernetes/grafana_dashboard_3.png)
+*Figure 7.11: Model monitoring - 6.13k predictions, 83.3% confidence, prediction distribution, risk level classification, inference time (22-23ms)*
+
+---
+
+**12. Advanced Metrics Dashboard**
+
+![Grafana Dashboard - Advanced Metrics](screenshots/kubernetes/grafana_dashboard_4.png)
+*Figure 7.12: Data preprocessing performance, risk score distribution, feature distribution for drift detection*
+
+---
+
+**13. Logs & Filtering Dashboard**
+
+![Grafana Dashboard - Logs](screenshots/kubernetes/grafana_dashboard_5.png)
+*Figure 7.13: Centralized logging with Loki - log volume by level, error logs, prediction logs, performance metrics logs*
+
+---
+
+**14. System Health & Pod Metrics**
+
+![Grafana Dashboard - System Health](screenshots/kubernetes/grafana_dashboard_6.png)
+*Figure 7.14: Memory usage by pod (Heart API: 215 MB, Prometheus: 161 MB, Grafana: 561 MB), pod uptime, API request rate*
+
+---
+
+**15. Prometheus Targets**
+
+![Prometheus Targets](screenshots/kubernetes/prometheus_targets.png)
+*Figure 7.15: Prometheus scrape targets showing all endpoints UP (grafana, heart-disease-api, loki, prometheus)*
+
+---
+
+**16. Redis Cache Performance Metrics**
+
+![Redis Cache Metrics](screenshots/kubernetes/redis_cache_metrics.png)
+*Figure 7.16: Redis monitoring dashboard (placeholder for Redis-specific metrics if deployed)*
+
+---
+
+### 7.9 Deployment Summary
 
 ---
 
@@ -1041,26 +1172,33 @@ mkdir -p screenshots/kubernetes
 8. ✅ `mlflow_model_registry.png` - Production model in registry
 9. ✅ `mlflow_artifacts.png` - Model artifacts folder
 
-**CI/CD Screenshots (6 required):**
-1. `github_actions_workflow.png` - GitHub Actions tab
-2. `github_actions_tests.png` - Test job output
-3. `github_actions_coverage.png` - Coverage reporting step
-4. `github_actions_docker_build.png` - Docker build logs
-5. `github_actions_security_scan.png` - Trivy scan results
-6. `codecov_dashboard.png` - Codecov.io dashboard
+**CI/CD Screenshots (6 captured ✅):**
+1. ✅ `github_actions_workflow.png` - Workflow runs overview
+2. ✅ `github_actions_tests.png` - 79 tests passed, 81.29% coverage
+3. ✅ `github_actions_coverage.png` - Codecov upload verification
+4. ✅ `github_actions_docker_build.png` - Docker multi-stage build
+5. ✅ `github_actions_security_scan.png` - Trivy vulnerability scan
+6. ✅ `codecov_dashboard.png` - Coverage dashboard (81.29%)
 
-**Kubernetes Screenshots (9 required):**
-1. `kubectl_get_pods.png` - Run `kubectl get pods`
-2. `kubectl_get_services.png` - Run `kubectl get svc`
-3. `kubectl_describe_pod.png` - Run `kubectl describe pod <api-pod>`
-4. `api_swagger_ui.png` - Visit http://localhost:30080/docs
-5. `api_health_check.png` - Test /health endpoint
-6. `grafana_dashboard.png` - Visit http://localhost:30030
-7. `prometheus_targets.png` - Visit http://localhost:30090/targets
-8. `redis_cache_metrics.png` - Grafana Redis dashboard
-9. `api_prediction_response.png` - Make a prediction, capture response
+**Kubernetes Screenshots (16 captured ✅):**
+1. ✅ `kubectl_get_pods.png` - All 8 pods running (Rancher Dashboard)
+2. ✅ `kubectl_get_services.png` - Service Discovery with NodePort configs
+3. ✅ `kubectl_describe_pod.png` - Detailed pod specifications
+4. ✅ `api_swagger_ui.png` - FastAPI Swagger UI interactive docs
+5. ✅ `api_health_check.png` - Health endpoint JSON response
+6. ✅ `api_prediction_response_1.png` - Prediction API example 1
+7. ✅ `api_prediction_response_2.png` - Prediction API example 2
+8. ✅ `grafana_home.png` - Grafana dashboards list
+9. ✅ `grafana_dashboard_1.png` - Infrastructure Overview (system health)
+10. ✅ `grafana_dashboard_2.png` - Prediction History (10 predictions)
+11. ✅ `grafana_dashboard_3.png` - ML Monitoring (model status, 6.13k predictions)
+12. ✅ `grafana_dashboard_4.png` - Advanced Metrics (drift detection)
+13. ✅ `grafana_dashboard_5.png` - Logs & Filtering (Loki integration)
+14. ✅ `grafana_dashboard_6.png` - System Health (memory, CPU, uptime)
+15. ✅ `prometheus_targets.png` - Prometheus scrape targets (all UP)
+16. ✅ `redis_cache_metrics.png` - Redis performance monitoring
 
-**Total Screenshots:** 20
+**Total Screenshots:** 31 (all integrated into report ✅)
 
 ---
 

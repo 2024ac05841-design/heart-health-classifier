@@ -134,60 +134,6 @@ screenshots/
 
 ---
 
-## 🎯 How to Capture Screenshots
-
-### For Web URLs (MLflow, Grafana, Prometheus)
-
-1. Open the URL in your browser
-2. Wait for the page to fully load
-3. Use screenshot tool:
-   - **Windows:** Win + Shift + S (Snipping Tool)
-   - **macOS:** Cmd + Shift + 4
-   - **Linux:** Shift + PrtScn (or use Flameshot)
-4. Crop to relevant area (exclude browser chrome if possible)
-5. Save to the appropriate directory with exact filename
-
-### For Terminal Commands (kubectl)
-
-1. Open PowerShell or Terminal
-2. Run the command (e.g., `kubectl get pods`)
-3. Take screenshot of the terminal output
-4. Alternatively, use:
-   ```powershell
-   kubectl get pods | Out-File -FilePath screenshots/kubernetes/kubectl_get_pods.txt
-   # Then take screenshot of the text file
-   ```
-
-### For GitHub Actions
-
-1. Navigate to: https://github.com/2024ac05841-design/heart-health-classifier/actions
-2. Click on the most recent successful workflow run
-3. Expand each job to see detailed logs
-4. Capture each required step
-
-### For API Responses (Postman/curl)
-
-**Using Postman:**
-1. Create POST request to http://localhost:30080/predict
-2. Set Content-Type: application/json
-3. Add body with patient data
-4. Send request
-5. Capture response panel
-
-**Using PowerShell:**
-```powershell
-$response = Invoke-RestMethod -Uri "http://localhost:30080/predict" -Method Post `
-  -ContentType "application/json" `
-  -Body (@{
-    age=63; sex=1; cp=3; trestbps=145; chol=233; fbs=1;
-    restecg=0; thalach=150; exang=0; oldpeak=2.3;
-    slope=0; ca=0; thal=1
-  } | ConvertTo-Json)
-
-$response | ConvertTo-Json -Depth 10
-# Capture this output
-```
-
 ---
 
 ## ✅ Screenshot Checklist
@@ -205,39 +151,34 @@ Use this checklist to track your progress:
 - [x] mlflow_model_registry.png
 - [x] mlflow_artifacts.png
 
-### CI/CD (6 screenshots - ⏳ PENDING)
-- [ ] github_actions_workflow.png
-- [ ] github_actions_tests.png
-- [ ] github_actions_coverage.png
-- [ ] github_actions_docker_build.png
-- [ ] github_actions_security_scan.png
-- [ ] codecov_dashboard.png
+### CI/CD (6 screenshots - ✅ COMPLETE)
+- [x] github_actions_workflow.png
+- [x] github_actions_tests.png
+- [x] github_actions_coverage.png
+- [x] github_actions_docker_build.png
+- [x] github_actions_security_scan.png
+- [x] codecov_dashboard.png
 
-### Kubernetes (9 screenshots - ⏳ PENDING)
-- [ ] kubectl_get_pods.png
-- [ ] kubectl_get_services.png
-- [ ] kubectl_describe_pod.png
-- [ ] api_swagger_ui.png
-- [ ] api_health_check.png
-- [ ] grafana_dashboard.png
-- [ ] prometheus_targets.png
-- [ ] redis_cache_metrics.png
-- [ ] api_prediction_response.png
+### Kubernetes (16 screenshots - ✅ COMPLETE)
+- [x] kubectl_get_pods.png
+- [x] kubectl_get_services.png
+- [x] kubectl_describe_pod.png
+- [x] api_swagger_ui.png
+- [x] api_health_check.png
+- [x] api_prediction_response_1.png
+- [x] api_prediction_response_2.png
+- [x] grafana_home.png
+- [x] grafana_dashboard_1.png (Infrastructure Overview)
+- [x] grafana_dashboard_2.png (Prediction History)
+- [x] grafana_dashboard_3.png (ML Monitoring)
+- [x] grafana_dashboard_4.png (Advanced Metrics)
+- [x] grafana_dashboard_5.png (Logs & Filtering)
+- [x] grafana_dashboard_6.png (System Health)
+- [x] prometheus_targets.png
+- [x] redis_cache_metrics.png
 
-**Progress:** 9/24 screenshots complete (37.5%)
-**Status:** MLflow screenshots ✅ | CI/CD pending ⏳ | Kubernetes pending ⏳
-
----
-
-## 📝 Tips for Quality Screenshots
-
-1. **Resolution:** Use high resolution (at least 1920x1080)
-2. **Clarity:** Ensure text is readable
-3. **Relevant Content:** Crop to show only relevant information
-4. **Annotations:** Consider adding arrows or highlights for key elements
-5. **Consistency:** Use consistent capture method for all screenshots
-6. **File Format:** PNG preferred (lossless), JPEG acceptable
-7. **File Size:** Optimize if >2MB (use compression tools)
+**Progress:** 31/31 screenshots complete (100% ✅)
+**Status:** MLflow ✅ | CI/CD ✅ | Kubernetes ✅ | ALL COMPLETE! 🎉
 
 ---
 
@@ -249,30 +190,6 @@ Use this checklist to track your progress:
 - **Prometheus:** http://localhost:30090
 - **GitHub Actions:** https://github.com/2024ac05841-design/heart-health-classifier/actions
 
----
-
-## 📄 Using Screenshots in Report
-
-Once all screenshots are captured:
-
-1. Place them in appropriate directories
-2. Reference them in `PROJECT_REPORT.md`
-3. Optionally, embed images in Markdown:
-   ```markdown
-   ![MLflow Experiments](screenshots/mlflow/mlflow_experiments_list.png)
-   ```
-
-4. For PDF conversion, screenshots will be automatically included
-
----
-
-## 🤝 Need Help?
-
-If you encounter issues:
-- Ensure all services are running: `kubectl get pods`
-- Check service accessibility: Test URLs in browser
-- Verify NodePort bindings: `kubectl get svc`
-- Review logs: `kubectl logs <pod-name>`
 
 ---
 
