@@ -1,130 +1,76 @@
 # 🚀 Quick Start Guide
-> Get your Heart Disease Prediction API running locally in minutes!
+> Deploy a complete MLOps pipeline with Kubernetes in 10 minutes!
 
 ## 📋 Overview
 
-Deploy the complete MLOps pipeline with **three options**:
+Deploy a **production-ready** Heart Disease Prediction system with:
 
-| Option | Use Case | Time | Components |
-|--------|----------|------|------------|
-| 🔧 **Development** | Quick testing & iteration | 2 min | API only |
-| 🐳 **Docker** | Isolated environment | 3 min | API + Monitoring |
-| ☸️ **Kubernetes** | Production-like setup | 10 min | API + Redis + Monitoring + MLflow |
+| Component | Description | Port |
+|-----------|-------------|------|
+| 🫀 **ML API** | FastAPI prediction service with automatic validation | 30080 |
+| 💾 **Redis** | Prediction history cache with persistence | - |
+| 📊 **MLflow** | Experiment tracking & Model Registry | 30050 |
+| 📈 **Prometheus** | Metrics collection & monitoring | 30090 |
+| 🎨 **Grafana** | Visualization dashboards | 30030 |
+| 📝 **Loki + Promtail** | Centralized logging | - |
+
+**Deployment Time:** ~10 minutes  
+**Total Pods:** 8 running containers  
+**Architecture:** Full MLOps stack with monitoring, logging, and persistence
 
 ---
 
-## ✅ Prerequisites
+## 📦 Prerequisites & Setup
 
+### System Requirements
+- **Kubernetes:** Rancher Desktop or Docker Desktop with K8s enabled
+- **Tools:** `kubectl`, PowerShell (Windows), Python 3.11+
+- **Resources:** 4GB RAM minimum, 10GB disk space
+
+### Initial Setup
 ```powershell
-# 1. Clone & Navigate
+# 1. Clone repository
 git clone <repository-url>
 cd heart-disease-mlops
 
-# 2. Create Virtual Environment
+# 2. Create virtual environment
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
-# 3. Install Dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Prepare Data & Train Model (First time only)
+# 4. Prepare data & train models
 python data/download_data.py
 python scripts/train_model.py
 ```
 
-**What happens:** Downloads Heart Disease UCI dataset → Trains Logistic Regression & Random Forest → Saves best model → Logs to MLflow
+**What happens:** Downloads Heart Disease UCI dataset → Trains Logistic Regression & Random Forest → Saves best model → Logs experiments to MLflow
 
 ---
 
-## 🔧 Option 1: Development Mode
-**Best for:** Quick testing and model iteration
-
-```powershell
-# Start API
-uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 🌐 Access Points
-- **Swagger Docs:** http://localhost:8000/docs (Interactive API testing)
-- **Health Check:** http://localhost:8000/health
-- **ReDoc:** http://localhost:8000/redoc
-
-### 🧪 Test Prediction
-```powershell
-# Run test script
-python scripts/test_api.py
-
-# Or use curl
-curl -X POST "http://localhost:8000/predict" `
-  -H "Content-Type: application/json" `
-  -d "@test_data.json"
-```
-
-**Note:** Development mode doesn't include database or monitoring. Predictions are not stored.
-
----
-
-## 🐳 Option 2: Docker
-**Best for:** Isolated testing with monitoring stack
-
-### Single Container
-```powershell
-# Build & Run
-docker build -t heart-disease-api:latest .
-docker run -d -p 8000:8000 --name heart-api heart-disease-api:latest
-
-# Test
-curl http://localhost:8000/health
-
-# View logs
-docker logs -f heart-api
-
-# Stop & Remove
-docker stop heart-api && docker rm heart-api
-```
-
-### Full Stack with Docker Compose
-```powershell
-# Start all services (API + Prometheus + Grafana)
-docker-compose up -d
-
-# View status
-docker-compose ps
-
-# View logs
-docker-compose logs -f
-
-# Stop all
-docker-compose down
-```
-
-### 🌐 Access Points
-- **API:** http://localhost:8000/docs
-- **Prometheus:** http://localhost:9090
-- **Grafana:** http://localhost:3000 (admin/admin)
-
----
-
-## ☸️ Option 3: Kubernetes (Production-Like)
-**Best for:** Full MLOps experience with persistence and monitoring
+## ☸️ Kubernetes Deployment
 
 ### 🎯 What You'll Deploy
-A complete MLOps stack with 8 pods running locally:
-- **Heart Disease API** (1 pod) - ML prediction service
-- **Redis** (1 pod) - Prediction history cache with persistence
-- **MLflow** (1 pod) - Experiment tracking with Model Registry
-- **Prometheus** (1 pod) - Metrics collection
-- **Grafana** (1 pod) - Visualization dashboards
-- **Loki** (1 pod) - Log aggregation
-- **Promtail** (1 pod) - Log shipping
-- **Redis Exporter** (1 pod) - Redis metrics exporter
 
-### Prerequisites
-- Rancher Desktop or Docker Desktop with Kubernetes enabled
-- `kubectl` configured and pointing to local cluster
-- PowerShell (for Windows deployment scripts)
+A complete **8-pod MLOps stack** running locally on Kubernetes:
 
-### 🚀 Deploy
+| Pod | Role | Resources |
+|-----|------|-----------|
+| 🫀 **Heart Disease API** | ML prediction service with FastAPI | 256Mi RAM |
+| 💾 **Redis** | Prediction history & caching | 256Mi RAM |
+| 📊 **MLflow** | Experiment tracking & Model Registry | 3GB RAM |
+| 📈 **Prometheus** | Metrics collection & alerting | 512Mi RAM |
+| 🎨 **Grafana** | Dashboards & visualization | 512Mi RAM |
+| 📝 **Loki** | Log aggregation | 610Mi RAM |
+| 🔍 **Promtail** | Log shipping agent | 84Mi RAM |
+| 📊 **Redis Exporter** | Redis metrics for Prometheus | 128Mi RAM |
+
+**Total Resources:** ~5.3GB RAM
+
+---
+
+### 🚀 Deploy to Kubernetes
 ```powershell
 # 1. Verify Kubernetes is ready
 kubectl cluster-info
@@ -245,19 +191,24 @@ kubectl delete pvc --all
 
 ## 📊 MLflow Experiment Tracking
 
-### Option A: Kubernetes MLflow (Recommended)
-If you deployed with Kubernetes (Option 3), MLflow is already running:
+### Access MLflow UI
 
-**Access MLflow UI:** http://localhost:30050
+**URL:** http://localhost:30050
 
-**Features:**
-- View all training experiments
-- Compare model runs (Logistic Regression vs Random Forest)
-- Access model artifacts and parameters
-- Model Registry with versioning
-- Persistent storage via PersistentVolume
+### Features
 
-**Deploy MLflow separately** (if not done during setup):
+| Feature | Description |
+|---------|-------------|
+| 🧪 **Experiments** | View all training runs with metrics and parameters |
+| 🔀 **Compare Runs** | Side-by-side comparison of Logistic Regression vs Random Forest |
+| 📦 **Artifacts** | Access model files, environment specs, and dependencies |
+| 🏷️ **Model Registry** | Version control for ML models with stage management |
+| 💾 **Persistence** | Data stored in PersistentVolume (survives pod restarts) |
+
+### Model Registry
+
+After deployment, the best model is registered automatically:
+
 ```powershell
 # Deploy MLflow and upload experiments
 .\scripts\deploy-mlflow.ps1
@@ -266,41 +217,33 @@ If you deployed with Kubernetes (Option 3), MLflow is already running:
 python scripts/register_best_model.py
 ```
 
-**What happens during registration:**
-- Connects to MLflow at http://localhost:30050
-- Registers Random Forest model (best performer: 98.4% accuracy)
-- Creates Model Registry entry: `heart-disease-predictor`
-- Adds metadata tags (accuracy, roc_auc, model_type, trained_on)
-- Sets model stage to **Production**
-- Model becomes available at: http://localhost:30050/#/models/heart-disease-predictor
-
-### Option B: Local MLflow UI
-For development mode (Option 1) or Docker (Option 2):
-
-```powershell
-# Start MLflow UI locally
-python -m mlflow ui --port 5000
-```
-
-Visit http://localhost:5000 to view experiments from `mlruns_training/` directory.
+**What happens:**
+1. 🔗 Connects to MLflow at http://localhost:30050
+2. 🏆 Registers **Random Forest** model (98.4% accuracy)
+3. 📝 Creates Model Registry entry: `heart-disease-predictor`
+4. 🏷️ Adds metadata (accuracy: 0.984, roc_auc: 1.0, model_type: RandomForest)
+5. ⚡ Sets stage to **Production**
+6. 🌐 Available at: http://localhost:30050/#/models/heart-disease-predictor
 
 ---
 
-## 🧪 Run Tests
+## 🧪 Testing
+
+### Run Unit Tests
 
 ```powershell
-# Run all tests
-pytest tests/ -v
+# Run all tests with coverage
+pytest tests/ -v --cov=src --cov=api --cov-report=html
 
-# With coverage report
-pytest tests/ --cov=src --cov=api --cov-report=html
-
-# Open coverage report
+# View coverage report in browser
 start htmlcov/index.html
 
-# Test database integration (Kubernetes only)
+# Test Redis integration
 python scripts/test_database.py
 ```
+
+**Test Coverage:** 61% (src + api modules)  
+**Test Suites:** 21 passing tests across 3 test files
 
 ---
 
@@ -446,26 +389,49 @@ python scripts/register_best_model.py
 
 ## 🎯 What You've Built
 
-✅ **ML Pipeline:** Data processing → Feature engineering → Model training  
-✅ **REST API:** FastAPI with automatic validation and documentation  
-✅ **Database:** Redis with persistence for prediction history  
-✅ **Monitoring:** Prometheus + Grafana dashboards with custom panels  
-✅ **Experiment Tracking:** MLflow with Model Registry and artifact storage  
-✅ **Containerization:** Docker with multi-stage builds  
-✅ **Orchestration:** Kubernetes with StatefulSets, PersistentVolumes, and NodePort services  
-✅ **Testing:** Unit tests with 61% coverage reporting  
-✅ **CI/CD Ready:** Infrastructure-as-code with declarative YAML manifests  
+A **production-ready MLOps system** with enterprise-grade capabilities:
+
+### 🤖 Machine Learning
+- **ML Pipeline:** Data processing → Feature engineering → Model training
+- **Experiment Tracking:** MLflow with Model Registry and artifact storage  
+- **Model Deployment:** Best performing model (98.4% accuracy) in production
+
+### 🌐 API & Services
+- **REST API:** FastAPI with automatic validation, documentation, and OpenAPI specs
+- **Database:** Redis with persistence for prediction history
+- **Monitoring:** Prometheus metrics collection with custom exporters
+
+### 📊 Observability
+- **Dashboards:** Grafana with pre-configured panels for API, Redis, and infrastructure metrics
+- **Logging:** Centralized logging with Loki + Promtail
+- **Alerting:** Prometheus-based alerting rules (ready for configuration)
+
+### ⚙️ Infrastructure
+- **Containerization:** Docker with multi-stage builds and optimized images
+- **Orchestration:** Kubernetes with StatefulSets, PersistentVolumes, NodePort services
+- **Testing:** Unit tests with 61% coverage  
+- **CI/CD Ready:** Infrastructure-as-code with declarative YAML manifests
 
 ---
 
 ## 📚 Next Steps
 
-- **Customize Models:** Modify `src/model_training.py` for different algorithms
-- **Add Features:** Extend `src/feature_engineering.py` with domain knowledge
-- **Scale:** Increase replicas in `k8s/deployment.yaml`
-- **Secure:** Add authentication to API endpoints
-- **Monitor:** Create custom Grafana dashboards
+### 🔧 Customize & Extend
+- **Models:** Modify [src/model_training.py](src/model_training.py) for different ML algorithms
+- **Features:** Extend [src/feature_engineering.py](src/feature_engineering.py) with domain knowledge
+- **API:** Add new endpoints in [api/routers/](api/routers/)
+
+### 📈 Scale & Optimize
+- **Horizontal Scaling:** Increase replicas in [k8s/deployment.yaml](k8s/deployment.yaml)
+- **Resource Limits:** Tune memory/CPU allocations per pod
+- **Caching:** Optimize Redis TTL and eviction policies
+
+### 🔒 Production Readiness
+- **Authentication:** Add JWT/OAuth to API endpoints
+- **Secrets Management:** Use Kubernetes Secrets for sensitive data
+- **TLS/HTTPS:** Configure ingress with cert-manager
+- **Monitoring:** Create custom Grafana dashboards and Prometheus alerts
 
 ---
 
-**🎓 Happy Building!**
+**🎓 Happy Building! Need help? Check the troubleshooting section above or open an issue.**
