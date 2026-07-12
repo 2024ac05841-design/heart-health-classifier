@@ -345,18 +345,54 @@ sequenceDiagram
 **Stage:** Production  
 **Model Format:** scikit-learn  
 
-**Screenshot Placeholder:**
-```
-📸 MLflow Screenshots Location:
-Place screenshots in: /screenshots/mlflow/
+#### 📸 MLflow UI Screenshots
 
-Required screenshots:
-1. mlflow_experiments_list.png - List of all experiments
-2. mlflow_run_details.png - Detailed view of best run
-3. mlflow_metrics_comparison.png - Comparison of metrics across runs
-4. mlflow_model_registry.png - Model registry showing production model
-5. mlflow_artifacts.png - Logged artifacts (model, plots)
-```
+**1. Experiments List - Overview of all training runs**
+
+![MLflow Experiments List](screenshots/mlflow/mlflow_experiments_list.png)
+*Figure 5.1: MLflow Experiments page showing "heart_disease_prediction" experiment with 2 runs (random_forest and logistic_regression)*
+
+---
+
+**2. Run Details - Random Forest Model (Best Performer)**
+
+![MLflow Run Details](screenshots/mlflow/mlflow_run_details.png)
+*Figure 5.2: Detailed view of the Random Forest run showing parameters (4), metrics (5), and artifacts including trained model*
+
+---
+
+**3. Metrics Comparison - Model Performance Across Runs**
+
+![Accuracy Comparison](screenshots/mlflow/mlflow_metrics_comparison-1.png)
+*Figure 5.3a: Accuracy comparison - Random Forest (0.98) vs Logistic Regression (0.89)*
+
+![Recall Comparison](screenshots/mlflow/mlflow_metrics_comparison-2.png)
+*Figure 5.3b: Recall comparison - Random Forest (1.00) vs Logistic Regression (0.93)*
+
+![ROC-AUC Comparison](screenshots/mlflow/mlflow_metrics_comparison-3.png)
+*Figure 5.3c: ROC-AUC comparison - Random Forest (1.00) vs Logistic Regression (0.94)*
+
+![F1-Score Comparison](screenshots/mlflow/mlflow_metrics_comparison-4.png)
+*Figure 5.3d: F1-Score comparison - Random Forest (0.98) vs Logistic Regression (0.89)*
+
+![Precision Comparison](screenshots/mlflow/mlflow_metrics_comparison-5.png)
+*Figure 5.3e: Precision comparison - Random Forest (0.97) vs Logistic Regression (0.85)*
+
+---
+
+**4. Model Registry - Production Model**
+
+![MLflow Model Registry](screenshots/mlflow/mlflow_model_registry.png)
+*Figure 5.4: Model registry showing "heart-disease-predictor" Version 1 in Production stage with 98.4% accuracy*
+
+---
+
+**5. Model Artifacts - Saved Model Files**
+
+![MLflow Artifacts](screenshots/mlflow/mlflow_artifacts.png)
+*Figure 5.5: Artifacts folder showing MLmodel schema, model.pkl, conda.yaml, python_env.yaml, and requirements.txt*
+
+---
 
 ### 5.5 Experiment Comparison
 
@@ -994,12 +1030,16 @@ mkdir -p screenshots/cicd
 mkdir -p screenshots/kubernetes
 ```
 
-**MLflow Screenshots (5 required):**
-1. `mlflow_experiments_list.png` - Access http://localhost:30050
-2. `mlflow_run_details.png` - Click on a specific run
-3. `mlflow_metrics_comparison.png` - Select multiple runs, compare
-4. `mlflow_model_registry.png` - Navigate to "Models" tab
-5. `mlflow_artifacts.png` - View artifacts of a run
+**MLflow Screenshots (9 captured ✅):**
+1. ✅ `mlflow_experiments_list.png` - Experiments overview
+2. ✅ `mlflow_run_details.png` - Random Forest run details
+3. ✅ `mlflow_metrics_comparison-1.png` - Accuracy comparison
+4. ✅ `mlflow_metrics_comparison-2.png` - Recall comparison
+5. ✅ `mlflow_metrics_comparison-3.png` - ROC-AUC comparison
+6. ✅ `mlflow_metrics_comparison-4.png` - F1-Score comparison
+7. ✅ `mlflow_metrics_comparison-5.png` - Precision comparison
+8. ✅ `mlflow_model_registry.png` - Production model in registry
+9. ✅ `mlflow_artifacts.png` - Model artifacts folder
 
 **CI/CD Screenshots (6 required):**
 1. `github_actions_workflow.png` - GitHub Actions tab
