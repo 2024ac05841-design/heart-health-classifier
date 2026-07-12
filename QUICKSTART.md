@@ -9,7 +9,7 @@ Deploy the complete MLOps pipeline with **three options**:
 |--------|----------|------|------------|
 | 🔧 **Development** | Quick testing & iteration | 2 min | API only |
 | 🐳 **Docker** | Isolated environment | 3 min | API + Monitoring |
-| ☸️ **Kubernetes** | Production-like setup | 5 min | API + Redis + Monitoring |
+| ☸️ **Kubernetes** | Production-like setup | 10 min | API + Redis + Monitoring + MLflow |
 
 ---
 
@@ -108,9 +108,21 @@ docker-compose down
 ## ☸️ Option 3: Kubernetes (Production-Like)
 **Best for:** Full MLOps experience with persistence and monitoring
 
+### 🎯 What You'll Deploy
+A complete MLOps stack with 8 pods running locally:
+- **Heart Disease API** (1 pod) - ML prediction service
+- **Redis** (1 pod) - Prediction history cache with persistence
+- **MLflow** (1 pod) - Experiment tracking with Model Registry
+- **Prometheus** (1 pod) - Metrics collection
+- **Grafana** (1 pod) - Visualization dashboards
+- **Loki** (1 pod) - Log aggregation
+- **Promtail** (1 pod) - Log shipping
+- **Redis Exporter** (1 pod) - Redis metrics exporter
+
 ### Prerequisites
 - Rancher Desktop or Docker Desktop with Kubernetes enabled
-- `kubectl` configured
+- `kubectl` configured and pointing to local cluster
+- PowerShell (for Windows deployment scripts)
 
 ### 🚀 Deploy
 ```powershell
@@ -119,25 +131,36 @@ kubectl cluster-info
 kubectl get nodes
 
 # 2. Build image (local registry)
-docker build -t heart-disease-api:v1-redis .
+docker build -t heart-health-classifier:latest .
 
 # 3. Deploy infrastructure (order matters!)
-kubectl apply -f k8s/redis.yaml           # Database
-kubectl apply -f k8s/redis-exporter.yaml  # Metrics exporter
-kubectl apply -f k8s/deployment.yaml      # API
+kubectl apply -f k8s/redis.yaml              # Redis cache
+kubectl apply -f k8s/redis-exporter.yaml     # Redis metrics
+kubectl apply -f k8s/monitoring-local.yaml   # Prometheus + Grafana
+kubectl apply -f k8s/deployment.yaml         # Heart Disease API
 
-# 4. Wait for pods to be ready
+# 4. Deploy MLflow (experiment tracking)
+.\scripts\deploy-mlflow.ps1
+
+# 5. Wait for all pods to be ready
 kubectl get pods -w
-# Press Ctrl+C when all pods show "Running" and "1/1" or "2/2"
+# Press Ctrl+C when all pods show "Running"
 
-# 5. Verify deployment
+# 6. Verify deployment
 kubectl get all
+kubectl get ingress  # Optional: View ingress placeholders
 ```
 
-### 🌐 Access Points
-- **API:** http://localhost:30080/docs
-- **Grafana:** http://localhost:30030 (admin/admin)
-- **Prometheus:** http://localhost:30090
+### 🌐 Access Points (NodePort)
+All services are accessible via direct NodePort access:
+
+- **API Swagger UI:** http://localhost:30080/docs
+- **API Health Check:** http://localhost:30080/health
+- **Grafana Dashboard:** http://localhost:30030 (login: admin/admin)
+- **MLflow UI:** http://localhost:30050 (experiments & models)
+- **Prometheus Metrics:** http://localhost:30090
+
+**Note:** Ingress endpoints exist as placeholders but NodePort is the recommended access method for local development.
 
 ### 🧪 Test Complete Workflow
 ```powershell
@@ -162,6 +185,14 @@ Invoke-RestMethod -Uri "http://localhost:30080/predictions/stats"
 # 5. Check Redis metrics in Grafana
 # Open: http://localhost:30030
 # Navigate to: "Redis Prediction Cache" dashboard
+
+# 6. View MLflow experiments
+# Open: http://localhost:30050
+# Explore training runs and model artifacts
+
+# 7. Check Prometheus targets
+# Open: http://localhost:30090/targets
+# Verify all services are being scraped
 ```
 
 ### 📊 View Logs
@@ -179,41 +210,63 @@ kubectl logs -l app --prefix=true -f
 ### 🔄 Update Deployment
 ```powershell
 # Rebuild image
-docker build -t heart-disease-api:v1-redis --no-cache .
+docker build -t heart-health-classifier:latest --no-cache .
 
 # Restart deployment (picks up new image)
 kubectl rollout restart deployment heart-disease-api
 
 # Check rollout status
 kubectl rollout status deployment heart-disease-api
+
+# Restart all services
+kubectl rollout restart deployment --all
 ```
 
 ### 🛑 Clean Up
 ```powershell
-# Delete all deployments (keeps PVC/data)
+# Delete all deployments (keeps PVC/data for Redis and MLflow)
 kubectl delete -f k8s/deployment.yaml
+kubectl delete -f k8s/monitoring-local.yaml
+kubectl delete -f k8s/mlflow.yaml
 kubectl delete -f k8s/redis-exporter.yaml
 kubectl delete -f k8s/redis.yaml
+kubectl delete -f k8s/ingress.yaml  # If deployed
 
-# Or delete everything including data
+# Or delete everything including persistent data
 kubectl delete all --all
 kubectl delete pvc --all
 ```
 
 ---
 
-## 📊 MLflow Experiments
-Track all model training experiments:
+## 📊 MLflow Experiment Tracking
 
+### Option A: Kubernetes MLflow (Recommended)
+If you deployed with Kubernetes (Option 3), MLflow is already running:
+
+**Access MLflow UI:** http://localhost:30050
+
+**Features:**
+- View all training experiments
+- Compare model runs (Logistic Regression vs Random Forest)
+- Access model artifacts and parameters
+- Model Registry with versioning
+- Persistent storage via PersistentVolume
+
+**Deploy MLflow separately** (if not done during setup):
 ```powershell
-# Start MLflow UI
-mlflow ui --port 5000
+.\scripts\deploy-mlflow.ps1
 ```
 
-Visit http://localhost:5000 to view:
-- All training runs with metrics
-- Model parameters and artifacts
-- Performance comparisons
+### Option B: Local MLflow UI
+For development mode (Option 1) or Docker (Option 2):
+
+```powershell
+# Start MLflow UI locally
+python -m mlflow ui --port 5000
+```
+
+Visit http://localhost:5000 to view experiments from `mlruns_training/` directory.
 
 ---
 
@@ -276,15 +329,18 @@ kubectl get events --sort-by=.metadata.creationTimestamp
 <summary><b>Docker image not found in Kubernetes</b></summary>
 
 ```powershell
-# Rebuild with specific tag
-docker build -t heart-disease-api:v1-redis .
+# Rebuild with correct tag
+docker build -t heart-health-classifier:latest .
 
 # Check image exists
-docker images | grep heart-disease
+docker images | grep heart-health-classifier
 
-# Update deployment imagePullPolicy
+# Verify deployment uses correct image
+kubectl describe deployment heart-disease-api | Select-String -Pattern "Image:"
+
+# Update deployment imagePullPolicy if needed
 kubectl edit deployment heart-disease-api
-# Change: imagePullPolicy: IfNotPresent
+# Set: imagePullPolicy: Never (for local images)
 ```
 </details>
 
@@ -305,6 +361,46 @@ kubectl logs -l app=redis --tail=50
 ```
 </details>
 
+<details>
+<summary><b>MLflow UI not accessible</b></summary>
+
+```powershell
+# Check MLflow pod status
+kubectl get pods -l app=mlflow
+
+# Check MLflow logs
+kubectl logs -l app=mlflow --tail=50
+
+# Verify service is exposed
+kubectl get svc mlflow-service
+
+# Test connectivity
+curl http://localhost:30050
+
+# Redeploy MLflow if needed
+.\scripts\deploy-mlflow.ps1
+```
+</details>
+
+<details>
+<summary><b>Grafana dashboards not loading</b></summary>
+
+```powershell
+# Check Grafana pod
+kubectl get pods -l app=grafana
+
+# Check Grafana logs
+kubectl logs -l app=grafana --tail=50
+
+# Verify Prometheus datasource
+# In Grafana UI: Configuration → Data Sources
+# Should see Prometheus at http://prometheus:9090
+
+# Restart Grafana
+kubectl rollout restart deployment grafana
+```
+</details>
+
 ---
 
 ## 🎯 What You've Built
@@ -312,11 +408,12 @@ kubectl logs -l app=redis --tail=50
 ✅ **ML Pipeline:** Data processing → Feature engineering → Model training  
 ✅ **REST API:** FastAPI with automatic validation and documentation  
 ✅ **Database:** Redis with persistence for prediction history  
-✅ **Monitoring:** Prometheus + Grafana dashboards  
-✅ **Containerization:** Docker with optimized images  
-✅ **Orchestration:** Kubernetes with StatefulSets and Services  
-✅ **Testing:** Unit tests with coverage reporting  
-✅ **Experiment Tracking:** MLflow for model versioning  
+✅ **Monitoring:** Prometheus + Grafana dashboards with custom panels  
+✅ **Experiment Tracking:** MLflow with Model Registry and artifact storage  
+✅ **Containerization:** Docker with multi-stage builds  
+✅ **Orchestration:** Kubernetes with StatefulSets, PersistentVolumes, and NodePort services  
+✅ **Testing:** Unit tests with 61% coverage reporting  
+✅ **CI/CD Ready:** Infrastructure-as-code with declarative YAML manifests  
 
 ---
 
