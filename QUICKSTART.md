@@ -142,11 +142,14 @@ kubectl apply -f k8s/deployment.yaml         # Heart Disease API
 # 4. Deploy MLflow (experiment tracking)
 .\scripts\deploy-mlflow.ps1
 
-# 5. Wait for all pods to be ready
+# 5. Register best model to MLflow Model Registry
+python scripts/register_best_model.py
+
+# 6. Wait for all pods to be ready
 kubectl get pods -w
 # Press Ctrl+C when all pods show "Running"
 
-# 6. Verify deployment
+# 7. Verify deployment
 kubectl get all
 kubectl get ingress  # Optional: View ingress placeholders
 ```
@@ -186,9 +189,10 @@ Invoke-RestMethod -Uri "http://localhost:30080/predictions/stats"
 # Open: http://localhost:30030
 # Navigate to: "Redis Prediction Cache" dashboard
 
-# 6. View MLflow experiments
+# 6. View MLflow experiments and registered model
 # Open: http://localhost:30050
-# Explore training runs and model artifacts
+# Experiments: View all training runs and artifacts
+# Models: View registered model "heart-disease-predictor" in Production
 
 # 7. Check Prometheus targets
 # Open: http://localhost:30090/targets
@@ -255,8 +259,20 @@ If you deployed with Kubernetes (Option 3), MLflow is already running:
 
 **Deploy MLflow separately** (if not done during setup):
 ```powershell
+# Deploy MLflow and upload experiments
 .\scripts\deploy-mlflow.ps1
+
+# Register best model to Model Registry
+python scripts/register_best_model.py
 ```
+
+**What happens during registration:**
+- Connects to MLflow at http://localhost:30050
+- Registers Random Forest model (best performer: 98.4% accuracy)
+- Creates Model Registry entry: `heart-disease-predictor`
+- Adds metadata tags (accuracy, roc_auc, model_type, trained_on)
+- Sets model stage to **Production**
+- Model becomes available at: http://localhost:30050/#/models/heart-disease-predictor
 
 ### Option B: Local MLflow UI
 For development mode (Option 1) or Docker (Option 2):
@@ -398,6 +414,31 @@ kubectl logs -l app=grafana --tail=50
 
 # Restart Grafana
 kubectl rollout restart deployment grafana
+```
+</details>
+
+<details>
+<summary><b>Model registration failed</b></summary>
+
+```powershell
+# Ensure MLflow is running
+kubectl get pods -l app=mlflow
+
+# Verify MLflow is accessible
+curl http://localhost:30050
+
+# Check if experiments were uploaded
+# Open: http://localhost:30050
+# Look for experiment "heart_disease_prediction"
+
+# Re-run model registration
+python scripts/register_best_model.py
+
+# Check registration logs for errors
+# Common issues:
+# - MLflow pod not ready (wait a few seconds)
+# - Experiments not uploaded (run deploy-mlflow.ps1 first)
+# - Run ID not found (verify run exists in MLflow UI)
 ```
 </details>
 
